@@ -1,0 +1,74 @@
+/*
+  CSS works like this:
+
+    selector {
+      property: value;
+    }
+
+  The selector picks WHICH elements to style.
+  The properties inside the { } say HOW to style them.
+*/
+
+/* "body" styles the whole page. */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f4f1ea;
+  color: #2b2b2b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* The big banner at the top. */
+header {
+  background-color: #2f4858;
+  color: white;
+  text-align: center;
+  padding: 48px 16px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+/* A dot (.) means "anything with class='tagline'". */
+.tagline {
+  margin: 8px 0 0;
+  opacity: 0.85;
+}
+
+/* Keeps the main content from getting too wide on big screens. */
+main {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+/* Each section becomes a white card. */
+section {
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px 24px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: #2f4858;
+  margin-top: 0;
+}
+
+a {
+  color: #d1495b;
+}
+
+/* ":hover" only applies while your mouse is over the link. */
+a:hover {
+  color: #2f4858;
+}
+
+footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #777;
+  padding: 16px;
+}
