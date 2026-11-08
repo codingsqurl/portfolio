@@ -7,68 +7,332 @@
 
   The selector picks WHICH elements to style.
   The properties inside the { } say HOW to style them.
+
+  WHAT MAKES THIS LAYOUT "RESPONSIVE":
+  1. Fluid sizes: clamp(min, preferred, max) lets text and spacing
+     grow and shrink smoothly with the screen instead of jumping.
+  2. A flexible grid: cards sit side by side when there is room and
+     stack when there isn't, with no breakpoints needed.
+  3. Media queries: @media rules make small adjustments at certain widths.
 */
 
-/* "body" styles the whole page. */
+
+/* ---------- Variables ----------
+   Custom properties (names starting with --) store values we reuse.
+   Change a colour here and it updates everywhere. */
+:root {
+  --text: #1d1d1f;
+  --text-muted: #6e6e73;
+  --bg-light: #f5f5f7;
+  --bg-white: #ffffff;
+  --bg-dark: #000000;
+  --card-dark: #1c1c1e;
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+
+  /* The widest the content is allowed to get. */
+  --content-width: 980px;
+
+  /* Side padding that is 16px on phones and grows to 32px on big screens. */
+  --gutter: clamp(16px, 4vw, 32px);
+}
+
+
+/* ---------- Base ---------- */
+
+/* Makes padding and borders count inside an element's width, which keeps maths simple. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Clicking a nav link glides to the section instead of jumping. */
+html {
+  scroll-behavior: smooth;
+  /* Stops the sticky nav from covering section headings after a jump. */
+  scroll-padding-top: 56px;
+}
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: #f4f1ea;
-  color: #2b2b2b;
-  line-height: 1.6;
+  /* "system-ui" uses each device's own built-in font, which looks crisp everywhere. */
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-white);
+  color: var(--text);
+  line-height: 1.5;
   margin: 0;
+  /* Smoother text rendering on Macs. */
+  -webkit-font-smoothing: antialiased;
 }
 
-/* The big banner at the top. */
-header {
-  background-color: #2f4858;
-  color: white;
-  text-align: center;
-  padding: 48px 16px;
+h1,
+h2,
+h3 {
+  /* Tight letter spacing on big headings gives a clean, modern look. */
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 0.4em;
 }
 
-h1 {
-  margin: 0;
-  font-size: 2.5rem;
-}
+/* Fluid heading sizes: clamp(smallest, grows-with-screen, largest). */
+h1 { font-size: clamp(2.5rem, 7vw, 5rem); }
+h2 { font-size: clamp(2rem, 5vw, 3.5rem); }
+h3 { font-size: clamp(1.4rem, 2.5vw, 1.75rem); }
 
-/* A dot (.) means "anything with class='tagline'". */
-.tagline {
-  margin: 8px 0 0;
-  opacity: 0.85;
-}
-
-/* Keeps the main content from getting too wide on big screens. */
-main {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 24px 16px;
-}
-
-/* Each section becomes a white card. */
-section {
-  background-color: white;
-  border-radius: 8px;
-  padding: 16px 24px;
-  margin-bottom: 20px;
-}
-
-h2 {
-  color: #2f4858;
-  margin-top: 0;
-}
+p { margin: 0 0 1em; }
 
 a {
-  color: #d1495b;
+  color: var(--accent);
+  text-decoration: none;
 }
 
-/* ":hover" only applies while your mouse is over the link. */
 a:hover {
-  color: #2f4858;
+  text-decoration: underline;
 }
 
-footer {
+
+/* ---------- Navigation ---------- */
+
+.site-nav {
+  /* "sticky" keeps the bar at the top of the screen while you scroll. */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  /* A see-through background with blur behind it: the "frosted glass" effect. */
+  background-color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.nav-inner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  height: 48px;
+  /* Flexbox lines the brand and links up in a row and spreads them apart. */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.nav-links {
+  display: flex;
+  /* gap also shrinks on small screens so the links always fit. */
+  gap: clamp(16px, 4vw, 32px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  font-size: 0.8rem;
+  color: var(--text);
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.nav-links a:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+
+/* ---------- Hero ---------- */
+
+.hero {
   text-align: center;
-  font-size: 0.9rem;
-  color: #777;
-  padding: 16px;
+  /* Tall hero that still looks good on short phone screens. */
+  padding: clamp(64px, 14vw, 140px) var(--gutter) clamp(56px, 10vw, 100px);
+  background-color: var(--bg-light);
+}
+
+.eyebrow {
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.5em;
+}
+
+.hero-sub {
+  font-size: clamp(1.2rem, 2.4vw, 1.75rem);
+  color: var(--text-muted);
+  max-width: 32ch; /* "ch" = width of a character, so lines never get too long. */
+  margin: 0 auto 1.5em;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap; /* Lets the two links drop onto separate lines on tiny screens. */
+  justify-content: center;
+  align-items: center;
+  gap: 16px 28px;
+}
+
+
+/* ---------- Buttons and links ---------- */
+
+/* A rounded "pill" button. */
+.button {
+  display: inline-block;
+  background-color: var(--accent);
+  color: white;
+  padding: 12px 22px;
+  border-radius: 980px; /* A huge radius makes the ends fully round. */
+  font-size: 1rem;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.button:hover {
+  background-color: var(--accent-hover);
+  text-decoration: none;
+  transform: scale(1.03);
+}
+
+/* A text link with a little arrow after it. */
+.link-arrow::after {
+  content: " ›";
+}
+
+
+/* ---------- Full-width bands ---------- */
+
+.band {
+  padding: clamp(64px, 12vw, 120px) var(--gutter);
+  text-align: center;
+}
+
+.band-light {
+  background-color: var(--bg-white);
+}
+
+/* The section after a light band uses the soft grey, so bands alternate. */
+#contact {
+  background-color: var(--bg-light);
+}
+
+.band-dark {
+  background-color: var(--bg-dark);
+  color: #f5f5f7;
+}
+
+/* Centres the content and stops it getting too wide. */
+.band-inner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+}
+
+.lead {
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  color: var(--text-muted);
+  max-width: 36ch;
+  margin: 0 auto 1.5em;
+}
+
+
+/* ---------- Card grid ---------- */
+
+.card-grid {
+  display: grid;
+  /* "Fit as many 210px-wide columns as there is room for, and stretch them to fill."
+     That one line makes the cards go 3 across on tablets and up, and stack on phones. */
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: clamp(12px, 2vw, 20px);
+  margin-top: clamp(32px, 5vw, 56px);
+  text-align: left;
+}
+
+.card {
+  background-color: var(--card-dark);
+  border-radius: 18px;
+  padding: clamp(24px, 3vw, 36px);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card p {
+  color: #a1a1a6;
+  margin: 0;
+}
+
+.card .card-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2997ff;
+  margin-bottom: 8px;
+}
+
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  background-color: var(--bg-light);
+  border-top: 1px solid #d2d2d7;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 20px var(--gutter);
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+
+/* ---------- Fade in on scroll ----------
+   Sections fade and rise into place as they scroll into view.
+   @supports means "only do this if the browser understands it", so older
+   browsers simply show everything normally. */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: fade-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ---------- Media queries ----------
+   These rules only apply when the screen matches the condition. */
+
+/* Phones: centre the cards' text, since they're stacked in a single column. */
+@media (max-width: 600px) {
+  .card {
+    text-align: center;
+  }
+}
+
+/* Respect people who've asked their device to reduce motion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    animation: none;
+  }
+
+  .button,
+  .card {
+    transition: none;
+  }
 }

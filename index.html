@@ -5,7 +5,7 @@
   <!-- The <head> holds information ABOUT the page. None of it shows up on the page itself. -->
   <head>
     <meta charset="UTF-8">
-    <!-- This makes the page fit properly on phones. -->
+    <!-- This makes the page fit properly on phones. Without it, phones zoom out and everything looks tiny. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- The title is the text shown on the browser tab. -->
     <title>My Portfolio</title>
@@ -16,39 +16,78 @@
   <!-- The <body> holds everything you SEE on the page. -->
   <body>
 
-    <header>
-      <h1>Hi, I'm Your Name</h1>
-      <p class="tagline">I'm learning web development, one tag at a time.</p>
+    <!-- A slim navigation bar that sticks to the top while you scroll. -->
+    <nav class="site-nav">
+      <div class="nav-inner">
+        <!-- href="#top" jumps back to the top of the page. -->
+        <a class="brand" href="#top">YN</a>
+        <ul class="nav-links">
+          <!-- Each href="#something" jumps to the element with id="something". -->
+          <li><a href="#about">About</a></li>
+          <li><a href="#learning">Learning</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- The hero is the big, bold first screen of the page. -->
+    <header class="hero" id="top">
+      <p class="eyebrow">Portfolio</p>
+      <h1>Hi, I'm Your Name.</h1>
+      <p class="hero-sub">Learning web development, one tag at a time.</p>
+      <div class="hero-actions">
+        <a class="button" href="#learning">See what I'm learning</a>
+        <a class="link-arrow" href="https://github.com/codingsqurl">View my GitHub</a>
+      </div>
     </header>
 
     <main>
-      <section>
-        <h2>About Me</h2>
-        <p>
-          This is my very first website. I built it with plain
-          <strong>HTML</strong> and <strong>CSS</strong>.
-        </p>
+      <!-- Each section is a full-width band. "class" lets CSS give it a light or dark look. -->
+      <section class="band band-light reveal" id="about">
+        <div class="band-inner">
+          <h2>About me.</h2>
+          <p class="lead">
+            This is my very first website. I built it with plain
+            <strong>HTML</strong> and <strong>CSS</strong>, no frameworks,
+            no shortcuts.
+          </p>
+        </div>
       </section>
 
-      <section>
-        <h2>Things I'm Learning</h2>
-        <ul>
-          <li>HTML: the structure of a page</li>
-          <li>CSS: the style of a page</li>
-          <li>Git and GitHub: saving and sharing my work</li>
-        </ul>
+      <section class="band band-dark" id="learning">
+        <div class="band-inner">
+          <h2 class="reveal">What I'm learning.</h2>
+          <!-- The grid puts these cards side by side on wide screens and stacks them on phones. -->
+          <div class="card-grid">
+            <article class="card reveal">
+              <p class="card-label">Structure</p>
+              <h3>HTML</h3>
+              <p>The building blocks of every page: headings, paragraphs, lists and links.</p>
+            </article>
+            <article class="card reveal">
+              <p class="card-label">Style</p>
+              <h3>CSS</h3>
+              <p>Colours, spacing and layouts that adapt to any screen size.</p>
+            </article>
+            <article class="card reveal">
+              <p class="card-label">Workflow</p>
+              <h3>Git &amp; GitHub</h3>
+              <p>Saving every step of my work and sharing it with the world.</p>
+            </article>
+          </div>
+        </div>
       </section>
 
-      <section>
-        <h2>Find Me</h2>
-        <p>
-          My code lives on
-          <a href="https://github.com/codingsqurl">GitHub</a>.
-        </p>
+      <section class="band band-light reveal" id="contact">
+        <div class="band-inner">
+          <h2>Let's connect.</h2>
+          <p class="lead">My code lives on GitHub. Come take a look.</p>
+          <a class="button" href="https://github.com/codingsqurl">Visit GitHub</a>
+        </div>
       </section>
     </main>
 
-    <footer>
+    <footer class="site-footer">
       <p>Made by me, 2026</p>
     </footer>
 
