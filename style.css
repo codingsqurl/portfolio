@@ -240,7 +240,44 @@ a:hover {
 }
 
 
+/* ---------- About: questions and answers ----------
+   Each .qa-item is a mini two-column grid: question on the left, answer on the right.
+   A thin line separates each pair. */
+
+.qa {
+  max-width: 760px;
+  margin: clamp(24px, 4vw, 40px) auto 0;
+  text-align: left;
+}
+
+.qa-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 8px clamp(16px, 4vw, 48px);
+  align-items: baseline; /* Lines the question up with the first line of its answer. */
+  padding: clamp(20px, 3vw, 28px) 0;
+  border-top: 1px solid #d2d2d7;
+}
+
+.qa-item:last-child {
+  border-bottom: 1px solid #d2d2d7;
+}
+
+.qa dt {
+  font-weight: 600;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+}
+
+.qa dd {
+  margin: 0; /* Browsers indent <dd> by default; we don't want that here. */
+  color: var(--text-muted);
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  line-height: 1.5;
+}
+
+
 /* ---------- Text-message chat ----------
+   Only used by the hidden review section now.
    A "phone screen" panel holding message bubbles.
    .them = grey bubble on the left, .me = blue bubble on the right. */
 
@@ -534,6 +571,11 @@ a:hover {
 @media (max-width: 600px) {
   .card {
     text-align: center;
+  }
+
+  /* Stack each question above its answer. */
+  .qa-item {
+    grid-template-columns: 1fr;
   }
 
   /* Bubbles can use more of the width on a small screen. */
