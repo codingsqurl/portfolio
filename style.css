@@ -497,6 +497,60 @@ a:hover {
 }
 
 
+/* ---------- Contribution graph ----------
+   One square per day for the past year, drawn as an SVG by the server.
+   The data and colours match the graph on my GitHub profile. */
+
+.contrib {
+  background-color: var(--card-dark);
+  border-radius: 18px;
+  padding: clamp(20px, 3vw, 32px);
+  margin: clamp(12px, 2vw, 20px) 0 0;
+  text-align: left;
+}
+
+.contrib figcaption {
+  color: #f5f5f7;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+/* The SVG stretches to the card's width, so the squares shrink on small screens. */
+.contrib svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.contrib text {
+  fill: #a1a1a6;
+  font-size: 9px;
+}
+
+/* Shades from "no commits" (0) to "lots of commits" (4): GitHub's own dark-mode greens. */
+.contrib-l0 { fill: #161b22; background-color: #161b22; }
+.contrib-l1 { fill: #0e4429; background-color: #0e4429; }
+.contrib-l2 { fill: #006d32; background-color: #006d32; }
+.contrib-l3 { fill: #26a641; background-color: #26a641; }
+.contrib-l4 { fill: #39d353; background-color: #39d353; }
+
+.contrib-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin: 12px 0 0;
+  color: #a1a1a6;
+  font-size: 0.8rem;
+}
+
+.contrib-legend span {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+
 /* ---------- Skill chips ---------- */
 
 .skills-title {

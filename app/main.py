@@ -1,7 +1,7 @@
 """The portfolio's web server.
 
-It serves the site's files, fills in the GitHub project cards, and adds the
-security and caching rules to every response.
+It serves the site's files, fills in the GitHub project cards and contribution
+graph, and adds the security and caching rules to every response.
 
 Run it locally with:
 
@@ -21,7 +21,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app import projects
+from app import contributions, projects
 
 log = logging.getLogger("uvicorn.error")
 
@@ -117,6 +117,13 @@ class HomePage:
         except Exception as error:
             # Keep the cards saved in index.html and try GitHub again soon.
             log.warning("couldn't reach GitHub (%s), using the saved project cards", error)
+            self.next_refresh = time.monotonic() + PROJECTS_RETRY
+
+        try:
+            page = contributions.insert_graph(page, contributions.fetch_calendar())
+        except Exception as error:
+            # Keep the graph saved in index.html and try again soon.
+            log.warning("couldn't load the contribution graph (%s), using the saved one", error)
             self.next_refresh = time.monotonic() + PROJECTS_RETRY
 
         self.html = page
