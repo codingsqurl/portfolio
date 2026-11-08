@@ -19,7 +19,7 @@ Your site is plain HTML and CSS with no forms, no JavaScript and no server code,
       `git rm --cached -r .claude` then add `.claude/` to a new `.gitignore`
 - [x] Add a `.gitignore` covering `.DS_Store`, `.claude/`, `.env` and `node_modules/`
 - [x] Check that no secrets, keys or private notes are anywhere in the git history
-- [ ] Protect the `main` branch so it can't be force-pushed or deleted
+- [x] Protect the `main` branch so it can't be force-pushed or deleted
       (repo → Settings → Rules → add a ruleset for `main`)
 
 ## 3. Pick a host
