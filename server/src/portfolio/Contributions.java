@@ -146,8 +146,11 @@ final class Contributions {
         return "\n"
                 + "            <figure class=\"contrib\">\n"
                 + "              <figcaption>" + count + " " + noun + " in the last year</figcaption>\n"
-                + "              <svg viewBox=\"0 0 " + width + " " + height + "\" role=\"img\" aria-label=\"GitHub contribution graph: "
-                + count + " " + noun + " in the last year\">" + labels + squares + "</svg>\n"
+                // On a phone the graph is wider than the screen, so it scrolls sideways inside its card.
+                // tabindex lets keyboard users scroll it too.
+                + "              <div class=\"contrib-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Contribution graph, scrolls sideways\">"
+                + "<svg viewBox=\"0 0 " + width + " " + height + "\" role=\"img\" aria-label=\"GitHub contribution graph: "
+                + count + " " + noun + " in the last year\">" + labels + squares + "</svg></div>\n"
                 + "              <p class=\"contrib-legend\" aria-hidden=\"true\">Less <span class=\"contrib-l0\"></span><span class=\"contrib-l1\"></span><span class=\"contrib-l2\"></span><span class=\"contrib-l3\"></span><span class=\"contrib-l4\"></span> More</p>\n"
                 + "            </figure>\n"
                 + "          ";

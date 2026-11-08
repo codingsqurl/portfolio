@@ -9,6 +9,7 @@
   The properties inside the { } say HOW to style them.
 
   WHAT MAKES THIS LAYOUT "RESPONSIVE":
+  (Scroll to "Lights" near the end for the glowing, shimmering bits.)
   1. Fluid sizes: clamp(min, preferred, max) lets text and spacing
      grow and shrink smoothly with the screen instead of jumping.
   2. A flexible grid: cards sit side by side when there is room and
@@ -21,14 +22,27 @@
    Custom properties (names starting with --) store values we reuse.
    Change a colour here and it updates everywhere. */
 :root {
-  --text: #1d1d1f;
-  --text-muted: #6e6e73;
-  --bg-light: #f5f5f7;
-  --bg-white: #ffffff;
+  /* The whole site is dark, so tell the browser: scrollbars and form bits match. */
+  color-scheme: dark;
+
+  --text: #f5f5f7;
+  --text-muted: #a1a1a6;
+  /* Three near-blacks: the page, a slightly lifted section, and cards. */
+  --bg-white: #000000;
+  --bg-light: #0a0a0c;
   --bg-dark: #000000;
-  --card-dark: #1c1c1e;
-  --accent: #0071e3;
-  --accent-hover: #0077ed;
+  --card-dark: #111113;
+  /* Hairline borders: thin, faint white lines that separate things without shouting. */
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --accent: #2997ff;
+  --accent-hover: #4da9ff;
+
+  /* The colours of the lights: one cool family of blue, violet, cyan and indigo. */
+  --light-blue: #2997ff;
+  --light-violet: #bf5af2;
+  --light-cyan: #64d2ff;
+  --light-indigo: #5e5ce6;
 
   /* The widest the content is allowed to get. */
   --content-width: 980px;
@@ -58,11 +72,15 @@ body {
   /* "system-ui" uses each device's own built-in font, which looks crisp everywhere. */
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-white);
+  /* Numbers line up neatly, and the system font uses its nicer letter shapes. */
+  font-feature-settings: "ss01", "cv11";
   color: var(--text);
   line-height: 1.5;
   margin: 0;
   /* Smoother text rendering on Macs. */
   -webkit-font-smoothing: antialiased;
+  /* Very long words (like a pasted link) wrap instead of pushing the page sideways. */
+  overflow-wrap: break-word;
 }
 
 h1,
@@ -75,7 +93,13 @@ h3 {
 }
 
 /* Fluid heading sizes: clamp(smallest, grows-with-screen, largest). */
-h1 { font-size: clamp(2.5rem, 7vw, 5rem); }
+h1 {
+  font-size: clamp(2.6rem, 8vw, 5.5rem);
+  font-weight: 700;
+  /* Big modern headlines are set tight. */
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+}
 h2 { font-size: clamp(2rem, 5vw, 3.5rem); }
 h3 { font-size: clamp(1.4rem, 2.5vw, 1.75rem); }
 
@@ -99,10 +123,10 @@ a:hover {
   top: 0;
   z-index: 10;
   /* A see-through background with blur behind it: the "frosted glass" effect. */
-  background-color: rgba(255, 255, 255, 0.72);
+  background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid var(--border);
 }
 
 .nav-inner {
@@ -119,6 +143,7 @@ a:hover {
 .brand {
   font-weight: 600;
   color: var(--text);
+  letter-spacing: -0.01em;
 }
 
 .nav-links {
@@ -131,7 +156,7 @@ a:hover {
 }
 
 .nav-links a {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--text);
   opacity: 0.8;
   transition: opacity 0.2s;
@@ -148,19 +173,26 @@ a:hover {
 .hero {
   text-align: center;
   /* Tall hero that still looks good on short phone screens. */
-  padding: clamp(64px, 14vw, 140px) var(--gutter) clamp(56px, 10vw, 100px);
-  background-color: var(--bg-light);
+  padding: clamp(72px, 14vw, 150px) var(--gutter) clamp(56px, 10vw, 100px);
+  background-color: var(--bg-white);
+  border-bottom: 1px solid var(--border);
 }
 
+/* A small outlined "badge" above the headline. */
 .eyebrow {
-  font-size: clamp(1rem, 1.6vw, 1.3rem);
-  font-weight: 600;
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 500;
   color: var(--text-muted);
-  margin-bottom: 0.5em;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 980px;
+  background-color: rgba(255, 255, 255, 0.04);
+  margin-bottom: 28px;
 }
 
 .hero-sub {
-  font-size: clamp(1.2rem, 2.4vw, 1.75rem);
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
   color: var(--text-muted);
   max-width: 32ch; /* "ch" = width of a character, so lines never get too long. */
   margin: 0 auto 1.5em;
@@ -178,25 +210,32 @@ a:hover {
 /* ---------- Buttons and links ---------- */
 
 /* A rounded "pill" button. */
+/* A rounded "pill" button: white on the dark page, so it's the first thing you see. */
 .button {
   display: inline-block;
-  background-color: var(--accent);
-  color: white;
-  padding: 12px 22px;
+  background-color: var(--text);
+  color: #000000;
+  font-weight: 500;
+  padding: 12px 24px;
   border-radius: 980px; /* A huge radius makes the ends fully round. */
   font-size: 1rem;
-  transition: background-color 0.2s, transform 0.2s;
+  transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .button:hover {
-  background-color: var(--accent-hover);
+  background-color: #ffffff;
   text-decoration: none;
-  transform: scale(1.03);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.12);
 }
 
 /* A text link with a little arrow after it. */
 .link-arrow::after {
   content: " ›";
+}
+
+.hero .link-arrow {
+  color: var(--light-blue);
 }
 
 
@@ -218,7 +257,11 @@ a:hover {
 
 .band-dark {
   background-color: var(--bg-dark);
-  color: #f5f5f7;
+}
+
+/* A hairline between sections, instead of a change of colour. */
+.band + .band {
+  border-top: 1px solid var(--border);
 }
 
 /* Centres the content and stops it getting too wide. */
@@ -256,11 +299,11 @@ a:hover {
   gap: 8px clamp(16px, 4vw, 48px);
   align-items: baseline; /* Lines the question up with the first line of its answer. */
   padding: clamp(20px, 3vw, 28px) 0;
-  border-top: 1px solid #d2d2d7;
+  border-top: 1px solid var(--border);
 }
 
 .qa-item:last-child {
-  border-bottom: 1px solid #d2d2d7;
+  border-bottom: 1px solid var(--border);
 }
 
 .qa dt {
@@ -461,15 +504,26 @@ a:hover {
   text-align: left;
 }
 
-.card {
-  background-color: var(--card-dark);
-  border-radius: 18px;
-  padding: clamp(24px, 3vw, 36px);
-  transition: transform 0.3s ease;
+/* The strengths cards: two across on wide screens, one on phones.
+   min(100%, 360px) stops a card ever being wider than a small phone's screen. */
+.card-grid-wide {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
 }
 
-.card:hover {
-  transform: translateY(-4px);
+.card {
+  border-radius: 18px;
+  padding: clamp(24px, 3vw, 36px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* The card's colour and its glowing border are layers behind the text (see "Lights"). */
+  position: relative;
+  isolation: isolate;
+}
+
+/* Only lift cards on devices with a mouse. On a phone, a tap would leave them stuck up. */
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-4px);
+  }
 }
 
 .card p {
@@ -478,9 +532,10 @@ a:hover {
 }
 
 .card .card-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #2997ff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--accent);
   margin-bottom: 8px;
 }
 
@@ -493,7 +548,7 @@ a:hover {
 }
 
 .card .card-links a {
-  color: #2997ff;
+  color: var(--accent);
 }
 
 
@@ -502,8 +557,9 @@ a:hover {
    The data and colours match the graph on my GitHub profile. */
 
 .contrib {
-  background-color: var(--card-dark);
   border-radius: 18px;
+  position: relative;
+  isolation: isolate;
   padding: clamp(20px, 3vw, 32px);
   margin: clamp(12px, 2vw, 20px) 0 0;
   text-align: left;
@@ -515,10 +571,28 @@ a:hover {
   margin-bottom: 14px;
 }
 
-/* The SVG stretches to the card's width, so the squares shrink on small screens. */
+/* The SVG stretches to the card's width. On a phone that would make the squares
+   specks, so it stops shrinking at 620px and scrolls sideways instead.
+   row-reverse makes it start scrolled to the right end: the most recent weeks. */
+.contrib-scroll {
+  display: flex;
+  flex-direction: row-reverse;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #3a3a3c transparent;
+  border-radius: 6px;
+}
+
+.contrib-scroll:focus-visible {
+  outline: 2px solid var(--light-blue);
+  outline-offset: 4px;
+}
+
 .contrib svg {
   display: block;
+  flex: 0 0 auto;
   width: 100%;
+  min-width: 620px;
   height: auto;
 }
 
@@ -555,7 +629,6 @@ a:hover {
 
 .skills-title {
   margin-top: clamp(48px, 7vw, 72px);
-  color: #f5f5f7;
 }
 
 .chips {
@@ -572,7 +645,8 @@ a:hover {
 .chips li {
   padding: 6px 14px;
   border-radius: 980px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border);
+  background-color: rgba(255, 255, 255, 0.03);
   color: #d2d2d7;
   font-size: 0.9rem;
 }
@@ -582,7 +656,7 @@ a:hover {
 
 .site-footer {
   background-color: var(--bg-light);
-  border-top: 1px solid #d2d2d7;
+  border-top: 1px solid var(--border);
   text-align: center;
   font-size: 0.75rem;
   color: var(--text-muted);
@@ -609,7 +683,7 @@ a:hover {
 /* Each button uses its service's colour so people recognise it. */
 .button-coffee {
   background-color: #ffdd00;
-  color: #1d1d1f;
+  color: #000000;
 }
 
 .button-coffee:hover {
@@ -623,6 +697,151 @@ a:hover {
 
 .button-discord:hover {
   background-color: #4752c4;
+}
+
+
+/* ---------- Lights ----------
+   The few things that shimmer and glow. It's all CSS, with no script.
+
+   Safety rule: nothing here flashes more than twice a second. Faster flashing
+   can trigger seizures (WCAG's limit is 3 a second), so the lights pulse,
+   sweep and fade instead of strobing. The reduced-motion block at the end of
+   the file switches all of it off for people who've asked for less motion. */
+
+/* Lets the card borders' light spin. Browsers that don't know @property just show them still. */
+@property --spin {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ----- Hero: a sweep of light across the name ----- */
+.hero h1 {
+  background: linear-gradient(110deg,
+    #ffffff 0%, #ffffff 40%,
+    #9fd0ff 46%, #ffffff 50%, #d9c2ff 54%,
+    #ffffff 60%, #ffffff 100%) 100% 0 / 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 4.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 15% { background-position: 100% 0; }
+  85%, 100% { background-position: 0% 0; }
+}
+
+/* ----- Cards and the graph: a hairline border that lights up on hover -----
+   The card's own background is the faint border colour. ::after is the card's
+   colour laid on top, 1px smaller all round, so only a thin edge shows.
+   ::before is a band of coloured light that spins behind that edge, hidden
+   until you hover over a card. */
+.card,
+.contrib {
+  background-color: var(--border);
+}
+
+.card::before,
+.contrib::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: conic-gradient(from var(--spin),
+    var(--light-blue), var(--light-violet), var(--light-indigo),
+    var(--light-cyan), var(--light-blue));
+  opacity: 0;
+  /* Paused until hover, so hidden cards don't keep the device busy. */
+  animation: spin 6s linear infinite paused;
+  transition: opacity 0.3s ease;
+}
+
+.card::after,
+.contrib::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  border-radius: 17px;
+  background-color: var(--card-dark);
+}
+
+@keyframes spin {
+  to { --spin: 360deg; }
+}
+
+@media (hover: hover) {
+  .card:hover {
+    box-shadow: 0 0 40px rgba(41, 151, 255, 0.15);
+  }
+
+  .card:hover::before {
+    opacity: 1;
+    animation-play-state: running;
+  }
+}
+
+/* ----- Contribution graph: the green squares twinkle ----- */
+.contrib rect.contrib-l1,
+.contrib rect.contrib-l2,
+.contrib rect.contrib-l3,
+.contrib rect.contrib-l4 {
+  animation: twinkle 2.8s ease-in-out infinite;
+}
+
+/* Different squares twinkle at different moments, so it shimmers instead of blinking all at once. */
+.contrib rect:nth-of-type(5n + 1) { animation-delay: -0.5s; }
+.contrib rect:nth-of-type(5n + 2) { animation-delay: -1.1s; }
+.contrib rect:nth-of-type(5n + 3) { animation-delay: -1.7s; }
+.contrib rect:nth-of-type(5n + 4) { animation-delay: -2.3s; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+
+/* ----- Skill chips: a wave of light runs along them, one after another ----- */
+.chips li {
+  --bulb: var(--light-blue);
+  animation: chip-light 3.4s ease-in-out infinite;
+}
+
+.chips li:nth-child(4n + 2) { --bulb: var(--light-violet); }
+.chips li:nth-child(4n + 3) { --bulb: var(--light-cyan); }
+.chips li:nth-child(4n + 4) { --bulb: var(--light-indigo); }
+
+/* Each chip waits 0.2s longer than the one before, so the light runs along the row. */
+.chips li:nth-child(1)  { animation-delay: 0s; }
+.chips li:nth-child(2)  { animation-delay: 0.2s; }
+.chips li:nth-child(3)  { animation-delay: 0.4s; }
+.chips li:nth-child(4)  { animation-delay: 0.6s; }
+.chips li:nth-child(5)  { animation-delay: 0.8s; }
+.chips li:nth-child(6)  { animation-delay: 1s; }
+.chips li:nth-child(7)  { animation-delay: 1.2s; }
+.chips li:nth-child(8)  { animation-delay: 1.4s; }
+.chips li:nth-child(9)  { animation-delay: 1.6s; }
+.chips li:nth-child(10) { animation-delay: 1.8s; }
+.chips li:nth-child(11) { animation-delay: 2s; }
+.chips li:nth-child(12) { animation-delay: 2.2s; }
+.chips li:nth-child(13) { animation-delay: 2.4s; }
+.chips li:nth-child(14) { animation-delay: 2.6s; }
+.chips li:nth-child(15) { animation-delay: 2.8s; }
+.chips li:nth-child(16) { animation-delay: 3s; }
+.chips li:nth-child(17) { animation-delay: 3.2s; }
+
+@keyframes chip-light {
+  0%, 30%, 100% {
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+    color: #d2d2d7;
+  }
+  12% {
+    border-color: var(--bulb);
+    box-shadow: 0 0 12px var(--bulb);
+    color: #ffffff;
+  }
 }
 
 
@@ -675,6 +894,24 @@ a:hover {
   }
 }
 
+/* Tiny phones (an iPhone SE is 320px wide): squeeze the nav a little more. */
+@media (max-width: 360px) {
+  .nav-links {
+    gap: 12px;
+  }
+
+  .brand {
+    font-size: 0.95rem;
+  }
+}
+
+/* Big screens: let the content spread out a bit more. */
+@media (min-width: 1440px) {
+  :root {
+    --content-width: 1120px;
+  }
+}
+
 /* Respect people who've asked their device to reduce motion. */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -688,6 +925,15 @@ a:hover {
   .button,
   .card {
     transition: none;
+  }
+
+  /* The lights stay on, but hold still. */
+  .hero h1,
+  .card::before,
+  .contrib::before,
+  .contrib rect,
+  .chips li {
+    animation: none;
   }
 
   .typing span {
