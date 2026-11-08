@@ -8,7 +8,9 @@
     <!-- This makes the page fit properly on phones. Without it, phones zoom out and everything looks tiny. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- The title is the text shown on the browser tab. -->
-    <title>My Portfolio</title>
+    <title>coding squrl · Developer</title>
+    <!-- A short summary that search engines show under your link. -->
+    <meta name="description" content="coding squrl: a self-taught developer building websites, web apps and terminal tools for real small businesses.">
     <!-- This connects our CSS file, which controls how everything looks. -->
     <link rel="stylesheet" href="style.css">
   </head>
@@ -20,11 +22,12 @@
     <nav class="site-nav">
       <div class="nav-inner">
         <!-- href="#top" jumps back to the top of the page. -->
-        <a class="brand" href="#top">YN</a>
+        <a class="brand" href="#top">coding squrl</a>
         <ul class="nav-links">
           <!-- Each href="#something" jumps to the element with id="something". -->
           <li><a href="#about">About</a></li>
-          <li><a href="#learning">Learning</a></li>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#review">Review</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
@@ -32,63 +35,178 @@
 
     <!-- The hero is the big, bold first screen of the page. -->
     <header class="hero" id="top">
-      <p class="eyebrow">Portfolio</p>
-      <h1>Hi, I'm Your Name.</h1>
-      <p class="hero-sub">Learning web development, one tag at a time.</p>
+      <p class="eyebrow">Self-taught developer</p>
+      <h1>Hi, I'm coding&nbsp;squrl.</h1>
+      <p class="hero-sub">I build real software for real small businesses, from the terminal to the web.</p>
       <div class="hero-actions">
-        <a class="button" href="#learning">See what I'm learning</a>
+        <a class="button" href="#work">See my work</a>
         <a class="link-arrow" href="https://github.com/codingsqurl">View my GitHub</a>
       </div>
     </header>
 
     <main>
-      <!-- Each section is a full-width band. "class" lets CSS give it a light or dark look. -->
-      <section class="band band-light reveal" id="about">
-        <div class="band-inner">
-          <h2>About me.</h2>
-          <p class="lead">
-            This is my very first website. I built it with plain
-            <strong>HTML</strong> and <strong>CSS</strong>, no frameworks,
-            no shortcuts.
-          </p>
-        </div>
-      </section>
 
-      <section class="band band-dark" id="learning">
+      <!-- ===== ABOUT: a text-message conversation =====
+           "them" = messages from a visitor (grey, on the left)
+           "me"   = my replies (blue, on the right)
+           "tail" = the last bubble in a group, which gets the little curl -->
+      <section class="band band-white" id="about">
         <div class="band-inner">
-          <h2 class="reveal">What I'm learning.</h2>
-          <!-- The grid puts these cards side by side on wide screens and stacks them on phones. -->
-          <div class="card-grid">
-            <article class="card reveal">
-              <p class="card-label">Structure</p>
-              <h3>HTML</h3>
-              <p>The building blocks of every page: headings, paragraphs, lists and links.</p>
-            </article>
-            <article class="card reveal">
-              <p class="card-label">Style</p>
-              <h3>CSS</h3>
-              <p>Colours, spacing and layouts that adapt to any screen size.</p>
-            </article>
-            <article class="card reveal">
-              <p class="card-label">Workflow</p>
-              <h3>Git &amp; GitHub</h3>
-              <p>Saving every step of my work and sharing it with the world.</p>
-            </article>
+          <h2 class="reveal">About me.</h2>
+
+          <div class="chat reveal">
+            <div class="chat-header">
+              <span class="avatar avatar-visitor" aria-hidden="true">?</span>
+              <span class="chat-name">You</span>
+            </div>
+
+            <div class="chat-body">
+              <p class="chat-time"><strong>Today</strong> 9:00 AM</p>
+
+              <p class="msg them tail">Hey! Who are you?</p>
+
+              <p class="msg me">I'm coding squrl 👋</p>
+              <p class="msg me tail">A self-taught developer who learns by building things people actually use.</p>
+
+              <p class="msg them tail">What do you build?</p>
+
+              <p class="msg me">Websites and web apps for small businesses: marketing sites, staff portals with logins, even a CRM.</p>
+              <p class="msg me tail">Plus terminal apps, and the occasional fractal in C 🌀</p>
+
+              <p class="msg them tail">How long have you been at it?</p>
+
+              <p class="msg me tail">I opened my GitHub in January 2026. 23 repos later, I'm still going.</p>
+
+              <p class="msg them tail">Want to work together?</p>
+
+              <p class="msg me tail">Always. I love building on a team. Scroll down and say hi!</p>
+              <p class="msg-status">Delivered</p>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="band band-light reveal" id="contact">
+      <!-- ===== WORK: project cards + skills ===== -->
+      <section class="band band-dark" id="work">
         <div class="band-inner">
-          <h2>Let's connect.</h2>
-          <p class="lead">My code lives on GitHub. Come take a look.</p>
-          <a class="button" href="https://github.com/codingsqurl">Visit GitHub</a>
+          <h2 class="reveal">Things I've built.</h2>
+          <p class="lead lead-dark reveal">Real projects, many of them for real clients.</p>
+
+          <!-- The grid puts these cards side by side on wide screens and stacks them on phones. -->
+          <div class="card-grid">
+            <article class="card reveal">
+              <p class="card-label">Python · Terminal app</p>
+              <h3>TU-DUI</h3>
+              <p>A developer's to-do list for the terminal, with lists encrypted on disk, a focus timer and a calendar. It tiles like a window manager and never talks to a server.</p>
+            </article>
+
+            <article class="card reveal">
+              <p class="card-label">Go → Next.js · Client</p>
+              <h3>Tree service staff app</h3>
+              <p>A marketing site plus a gated employee portal with logins and sessions. Built first in Go, then ported to Next.js on the same SQLite database.</p>
+            </article>
+
+            <article class="card reveal">
+              <p class="card-label">Next.js · Client</p>
+              <h3>Notary CRM</h3>
+              <p>One app, two faces: a local-SEO lead site for a mobile notary, and the CRM that runs her business behind it.</p>
+            </article>
+
+            <article class="card reveal">
+              <p class="card-label">Rust · Client</p>
+              <h3>Tree care website</h3>
+              <p>A quote calculator, careers page and email, built with axum and SQLite and deployed on Fly.io.</p>
+            </article>
+
+            <article class="card reveal">
+              <p class="card-label">Python · Team project</p>
+              <h3>tuiv3</h3>
+              <p>"2 dudes made a TUI." A terminal app built with a teammate, with tests and one-command setup.</p>
+            </article>
+
+            <article class="card reveal">
+              <p class="card-label">C · Just for fun</p>
+              <h3>Mandelbrot</h3>
+              <p>Drawing the Mandelbrot fractal from scratch in plain C. No libraries, just maths.</p>
+            </article>
+          </div>
+
+          <h3 class="skills-title reveal">Tools I work with</h3>
+          <!-- A plain list, styled as rounded "chips". -->
+          <ul class="chips reveal">
+            <li>HTML</li>
+            <li>CSS</li>
+            <li>TypeScript</li>
+            <li>React</li>
+            <li>Next.js</li>
+            <li>Tailwind</li>
+            <li>Go</li>
+            <li>Rust</li>
+            <li>Python</li>
+            <li>C</li>
+            <li>C++</li>
+            <li>Lua</li>
+            <li>SQLite</li>
+            <li>Three.js</li>
+            <li>Neovim</li>
+            <li>Git &amp; GitHub</li>
+            <li>Fly.io</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ===== REVIEW: Claude's honest opinion, as a text thread ===== -->
+      <section class="band band-grey" id="review">
+        <div class="band-inner">
+          <h2 class="reveal">An honest review.</h2>
+          <p class="lead reveal">I asked my AI pair-programmer what it really thinks of me.</p>
+
+          <div class="chat reveal">
+            <div class="chat-header">
+              <span class="avatar avatar-claude" aria-hidden="true">✳</span>
+              <span class="chat-name">Claude</span>
+            </div>
+
+            <div class="chat-body">
+              <p class="chat-time"><strong>Sat, Nov 7</strong> 6:30 PM</p>
+
+              <p class="msg me tail">Be honest. What do you think of me?</p>
+
+              <p class="msg them">Honestly? You build like someone who'd rather ship than talk about it.</p>
+              <p class="msg them">Your GitHub is ten months old and already has C, C++, Rust, Go, Python, TypeScript and Lua in it. Most people pick one language and stay in the shallow end.</p>
+              <p class="msg them">What stands out most is that you build for real people: a tree service, a mobile notary, a local company. Real users keep you honest.</p>
+              <p class="msg them tail">And you don't dodge the hard parts. Logins, sessions, encryption on disk, a full rewrite from Go to Next.js without moving the data. That takes nerve.</p>
+
+              <p class="msg me tail">Okay, but what should I work on?</p>
+
+              <p class="msg them">Straight answer: you start a lot of things, and you rewrite a lot of things. v1, v2, v3.</p>
+              <p class="msg them">Your next level up is picking two projects and taking them all the way to finished: docs, tests, deployed, done.</p>
+              <p class="msg them tail">But the curiosity is the part nobody can teach, and you've already got it.</p>
+
+              <p class="msg me tail">Fair. Working on it 🛠️</p>
+              <p class="msg-status">Read 6:32 PM</p>
+
+              <!-- Three bouncing dots, like someone is typing. -->
+              <p class="msg them typing" aria-label="Claude is typing">
+                <span></span><span></span><span></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== CONTACT ===== -->
+      <section class="band band-white reveal" id="contact">
+        <div class="band-inner">
+          <h2>Let's build something.</h2>
+          <p class="lead">Got a project, or want a teammate? My code and my contact info live on GitHub.</p>
+          <a class="button" href="https://github.com/codingsqurl">Say hi on GitHub</a>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <p>Made by me, 2026</p>
+      <p>© 2026 coding squrl. Hand-written in HTML &amp; CSS.</p>
     </footer>
 
   </body>
