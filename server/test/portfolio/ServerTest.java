@@ -22,7 +22,7 @@ final class ServerTest {
             Client.Reply home = Client.get("/");
             equal(200, home.status());
             equal("text/html; charset=utf-8", home.header("Content-Type"));
-            contains(home.text(), "Hi, I'm coding&nbsp;squrl.");
+            contains(home.text(), "Hi, I'm coding_squrl.");
             isTrue(home.text().matches("(?s).*href=\"style\\.css\\?v=[0-9a-f]{8}\".*"), "style.css?v=<8 hex>");
         });
 
