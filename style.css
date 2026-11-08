@@ -539,6 +539,18 @@ a:hover {
   margin: 0;
 }
 
+/* The support button, in Buy Me a Coffee's yellow so people recognise it. */
+.button-coffee {
+  background-color: #ffdd00;
+  color: #1d1d1f;
+  font-weight: 600;
+  margin: 12px 0 20px;
+}
+
+.button-coffee:hover {
+  background-color: #ffe433;
+}
+
 
 /* ---------- Fade in on scroll ----------
    Sections fade and rise into place as they scroll into view.
