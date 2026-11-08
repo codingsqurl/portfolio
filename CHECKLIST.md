@@ -14,7 +14,7 @@ Your site is plain HTML and CSS with no forms, no JavaScript and no server code,
 - [ ] Turn on GitHub → Settings → Emails → "Block command line pushes that expose my email"
 
 ## 2. Clean up the repo before it goes public
-- [ ] Decide whether the repo stays private. Cloudflare Pages and Netlify can deploy a private repo for free. GitHub Pages needs a public repo unless you pay for GitHub Pro
+- [x] Decide whether the repo stays private. Cloudflare Pages and Netlify can deploy a private repo for free. GitHub Pages needs a public repo unless you pay for GitHub Pro
 - [x] Remove `.claude/launch.json` from git, or ignore it. It's harmless, but it's local tooling that shouldn't be published
       `git rm --cached -r .claude` then add `.claude/` to a new `.gitignore`
 - [x] Add a `.gitignore` covering `.DS_Store`, `.claude/`, `.env` and `node_modules/`
@@ -23,9 +23,9 @@ Your site is plain HTML and CSS with no forms, no JavaScript and no server code,
       (repo → Settings → Rules → add a ruleset for `main`)
 
 ## 3. Pick a host
-- [ ] Choose one: **Cloudflare Pages** (recommended: free, private repo is fine, custom security headers, and it pairs with Cloudflare DNS), Netlify, or GitHub Pages
-- [ ] Connect the repo so every push to `main` deploys automatically
-- [ ] Open the free `*.pages.dev` (or similar) address and confirm the site loads
+- [x] Choose one: **Cloudflare Pages** (recommended: free, private repo is fine, custom security headers, and it pairs with Cloudflare DNS), Netlify, or GitHub Pages
+- [x] Connect the repo so every push to `main` deploys automatically
+- [x] Open the free `*.pages.dev` (or similar) address and confirm the site loads
 
 ## 4. Domain
 - [ ] Buy a domain from a registrar that doesn't charge a markup, such as Cloudflare Registrar or Porkbun
@@ -37,8 +37,8 @@ Your site is plain HTML and CSS with no forms, no JavaScript and no server code,
 - [ ] Decide between `www` and the bare domain, and redirect the other one to it
 
 ## 5. HTTPS
-- [ ] Confirm the host issued a certificate and the site loads over `https://`
-- [ ] Force all `http://` traffic to redirect to `https://`
+- [x] Confirm the host issued a certificate and the site loads over `https://`
+- [x] Force all `http://` traffic to redirect to `https://`
 - [ ] Once HTTPS has worked for a while, turn on HSTS so browsers never try plain http again (the header is in step 6)
 
 ## 6. Security headers
