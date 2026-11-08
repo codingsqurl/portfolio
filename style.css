@@ -539,16 +539,36 @@ a:hover {
   margin: 0;
 }
 
-/* The support button, in Buy Me a Coffee's yellow so people recognise it. */
+/* The footer buttons sit side by side, and wrap onto two lines on narrow phones. */
+.footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px 0 20px;
+}
+
+.footer-actions .button {
+  font-weight: 600;
+}
+
+/* Each button uses its service's colour so people recognise it. */
 .button-coffee {
   background-color: #ffdd00;
   color: #1d1d1f;
-  font-weight: 600;
-  margin: 12px 0 20px;
 }
 
 .button-coffee:hover {
   background-color: #ffe433;
+}
+
+.button-discord {
+  background-color: #5865f2;
+  color: #ffffff;
+}
+
+.button-discord:hover {
+  background-color: #4752c4;
 }
 
 
