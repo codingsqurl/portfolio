@@ -21,7 +21,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app import contributions, projects
+from app import contributions, firewall, projects
 
 log = logging.getLogger("uvicorn.error")
 
@@ -63,6 +63,15 @@ SECURITY_HEADERS = {
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 # Squashes text files before sending them, so pages download faster.
 app.add_middleware(GZipMiddleware, minimum_size=500)
+
+
+# Added before the security headers, so the headers go on the firewall's refusals too.
+@app.middleware("http")
+async def run_firewall(request: Request, call_next):
+    refusal = firewall.check(request)
+    if refusal is not None:
+        return refusal
+    return await call_next(request)
 
 
 @app.middleware("http")

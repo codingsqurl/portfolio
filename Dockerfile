@@ -24,4 +24,5 @@ USER web
 ENV PORT=8080
 EXPOSE 8080
 # "exec" lets the host stop the server cleanly. --proxy-headers trusts the host's front door to say whether the visitor used https.
-CMD exec uvicorn app.main:app --host 0.0.0.0 --port "$PORT" --proxy-headers --forwarded-allow-ips "*"
+# --no-server-header stops every response announcing "uvicorn", which tells attackers what to aim at.
+CMD exec uvicorn app.main:app --host 0.0.0.0 --port "$PORT" --proxy-headers --forwarded-allow-ips "*" --no-server-header
