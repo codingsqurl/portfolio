@@ -715,21 +715,26 @@ a:hover {
   inherits: false;
 }
 
-/* ----- Hero: a sweep of light across the name ----- */
+/* ----- Hero: the headline in rasta colours: green, gold and red -----
+   The gradient is twice as wide as the text and slides slowly along it, so the
+   colours flow through the name. The loop repeats the first colour at the end
+   so there's no jump when it starts again. */
 .hero h1 {
-  background: linear-gradient(110deg,
-    #ffffff 0%, #ffffff 40%,
-    #9fd0ff 46%, #ffffff 50%, #d9c2ff 54%,
-    #ffffff 60%, #ffffff 100%) 100% 0 / 250% 100%;
+  --rasta-green: #1fb954;
+  --rasta-gold: #fcd116;
+  --rasta-red: #e8333c;
+  background: linear-gradient(90deg,
+    var(--rasta-green), var(--rasta-gold), var(--rasta-red),
+    var(--rasta-gold), var(--rasta-green)) 0 0 / 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: shimmer 4.5s ease-in-out infinite;
+  animation: shimmer 8s linear infinite;
 }
 
 @keyframes shimmer {
-  0%, 15% { background-position: 100% 0; }
-  85%, 100% { background-position: 0% 0; }
+  from { background-position: 0% 0; }
+  to   { background-position: 200% 0; }
 }
 
 /* ----- Cards and the graph: a hairline border that lights up on hover -----
