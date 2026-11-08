@@ -4,6 +4,8 @@
 .claude
 .venv
 build
+build-test
+server/test
 .env
 **/__pycache__
 .DS_Store

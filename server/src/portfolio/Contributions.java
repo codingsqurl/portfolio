@@ -69,8 +69,12 @@ final class Contributions {
         if (response.statusCode() != 200) {
             throw new IllegalStateException("GitHub answered " + response.statusCode());
         }
-        String page = response.body();
+        return parseCalendar(response.body());
+    }
 
+    /** Reads each day's date, shade and tooltip out of GitHub's contribution page. Separate
+     *  from fetchCalendar so the tests can feed it a sample page without calling GitHub. */
+    static Calendar parseCalendar(String page) {
         Map<String, String> tooltips = new HashMap<>();
         Matcher tip = TOOLTIP.matcher(page);
         while (tip.find()) {

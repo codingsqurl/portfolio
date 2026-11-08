@@ -53,5 +53,6 @@ Hardening means shrinking what an attacker can reach and what they can do if the
 - [ ] Deploy only from your own machine with `fly deploy`. No CI keys, no GitHub Actions, nothing else holding a Fly token
 
 ## 7. Keep it hard
-- [ ] After every change to the server, re-run the firewall tests: a normal visit works, and a POST, a wrong host and `/wp-login.php` are refused
+- [x] Automated tests check the firewall, the security headers, what can and can't be reached, and that text from GitHub is escaped (`server/test/`)
+- [ ] After every change to the server, run `./run.sh test` and only deploy if it says 0 failed
 - [ ] Re-read this list every few months. Anything new you add, like a form, a script or a database, needs its own row here

@@ -80,18 +80,30 @@ public final class Server {
     static final Path STYLE_CSS = SITE.resolve("style.css");
     static final String STYLE_VERSION = sha256(read(STYLE_CSS)).substring(0, 8);
 
+    // With -Dportfolio.offline=true the server never calls GitHub and shows the cards and
+    // graph saved in index.html. The tests use it so they don't depend on the internet.
+    static final boolean OFFLINE = Boolean.getBoolean("portfolio.offline");
+    // With -Dportfolio.quiet=true the server doesn't log each request, so test output stays readable.
+    static final boolean QUIET = Boolean.getBoolean("portfolio.quiet");
+
     public static void main(String[] args) throws IOException {
         int port = Integer.parseInt(envOr("PORT", "8080"));
         String host = envOr("HOST", "0.0.0.0");
 
+        HttpServer server = start(host, port);
+        // When the host stops the server, let requests in progress finish (up to a second).
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> server.stop(1)));
+        System.out.println("serving " + SITE + " on http://" + host + ":" + port);
+    }
+
+    /** Starts the server. Port 0 picks any free port, which the tests use. */
+    static HttpServer start(String host, int port) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(host, port), 0);
         server.createContext("/", Server::handle);
         // A lightweight thread for each request, so one slow visitor can't hold up the rest.
         server.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
         server.start();
-        // When the host stops the server, let requests in progress finish (up to a second).
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> server.stop(1)));
-        System.out.println("serving " + SITE + " on http://" + host + ":" + port);
+        return server;
     }
 
     static void handle(HttpExchange exchange) {
@@ -114,8 +126,10 @@ public final class Server {
             }
         } finally {
             exchange.close();
-            System.out.println(Firewall.clientIp(exchange) + " \"" + exchange.getRequestMethod() + " "
-                    + exchange.getRequestURI().getRawPath() + "\" " + status);
+            if (!QUIET) {
+                System.out.println(Firewall.clientIp(exchange) + " \"" + exchange.getRequestMethod() + " "
+                        + exchange.getRequestURI().getRawPath() + "\" " + status);
+            }
         }
     }
 
@@ -178,6 +192,13 @@ public final class Server {
         private void rebuild() {
             String page = new String(read(SITE.resolve("index.html")), StandardCharsets.UTF_8);
             page = page.replace("href=\"style.css\"", "href=\"style.css?v=" + STYLE_VERSION + "\"");
+
+            if (OFFLINE) {
+                html = page;
+                etag = "\"" + sha256(page.getBytes(StandardCharsets.UTF_8)).substring(0, 16) + "\"";
+                nextRefresh = System.nanoTime() + PROJECTS_REFRESH * 1_000_000_000L;
+                return;
+            }
 
             try {
                 page = Projects.insertCards(page, Projects.fetchRepos());

@@ -3,6 +3,7 @@
 #
 #   ./run.sh           start the server at http://127.0.0.1:8000
 #   ./run.sh refresh   update the backup cards and graph saved in index.html
+#   ./run.sh test      run the tests (they never call GitHub)
 #
 # It needs Java 21: brew install openjdk@21
 set -e
@@ -16,6 +17,13 @@ fi
 # Compile every .java file into build/. It takes a second or two.
 rm -rf build
 javac -d build --release 21 $(find server/src -name '*.java')
+
+if [ "$1" = "test" ]; then
+  # The tests sit beside the server code but never go in the container.
+  rm -rf build-test
+  javac -d build-test --release 21 $(find server/src server/test -name '*.java')
+  exec java -cp build-test portfolio.AllTests
+fi
 
 if [ "$1" = "refresh" ]; then
   exec java -cp build portfolio.Refresh index.html

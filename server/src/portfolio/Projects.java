@@ -61,9 +61,15 @@ final class Projects {
         if (response.statusCode() != 200) {
             throw new IllegalStateException("GitHub answered " + response.statusCode());
         }
+        return parseRepos(response.body());
+    }
 
+    /** Picks the repos that get a card out of GitHub's JSON, newest first. Separate from
+     *  fetchRepos so the tests can feed it sample JSON without calling GitHub. */
+    @SuppressWarnings("unchecked")
+    static List<Map<String, Object>> parseRepos(String json) {
         List<Map<String, Object>> repos = new ArrayList<>();
-        for (Object item : (List<Object>) Json.parse(response.body())) {
+        for (Object item : (List<Object>) Json.parse(json)) {
             Map<String, Object> repo = (Map<String, Object>) item;
             if (!isTrue(repo.get("private")) && !isTrue(repo.get("fork")) && !isTrue(repo.get("archived"))
                     && !SKIP.contains(repo.get("name"))) {

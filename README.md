@@ -54,6 +54,25 @@ All in `server/src/portfolio/`:
 - `Html.java`: makes text from GitHub safe to put in the page
 - `Refresh.java`: what `./run.sh refresh` runs
 
+## Tests
+
+```
+./run.sh test
+```
+
+67 tests in `server/test/portfolio/`, using a small runner (`Check.java`) instead
+of a test library. They start a real copy of the server and send it real
+requests, so they cover:
+
+- The firewall: every kind of request it refuses, bans, rate limits, and that
+  real visitors still get through
+- The security headers, caching, gzip, HEAD and 304 replies
+- That nothing outside the public files can be reached
+- That text from GitHub is escaped before it reaches the page
+- The JSON reader, the project cards and the contribution graph
+
+They never call GitHub, so they work offline. Run them before every deploy.
+
 ## Deploy
 
 ```
