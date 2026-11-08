@@ -3,6 +3,7 @@
 .github
 .claude
 .venv
+build
 .env
 **/__pycache__
 .DS_Store

@@ -23,8 +23,8 @@ Your site is plain HTML and CSS with no forms, no JavaScript and no server code,
       (repo → Settings → Rules → add a ruleset for `main`)
 
 ## 3. Host: Fly.io
-The site runs as a small Python server on Fly.io. GitHub only stores the code: no GitHub Pages, no GitHub Actions.
-- [x] Choose a host: **Fly.io**, with the FastAPI server in `app/`
+The site runs as a small Java server on Fly.io. GitHub only stores the code: no GitHub Pages, no GitHub Actions.
+- [x] Choose a host: **Fly.io**, with the Java server in `server/`
 - [ ] Log in with `fly auth login` and deploy with `fly deploy`
 - [ ] Open https://codingsqurl.fly.dev and confirm the site loads
 - [ ] Turn off GitHub Pages once Fly is live, so the old copy stops being served
@@ -45,7 +45,7 @@ The site runs as a small Python server on Fly.io. GitHub only stores the code: n
 - [x] Turn on HSTS so browsers never try plain http again (the server sends it, see step 6)
 
 ## 6. Security headers
-The server sends these with every response. They're listed in `SECURITY_HEADERS` in `app/main.py`.
+The server sends these with every response. They're listed in `SECURITY_HEADERS` in `server/src/portfolio/Server.java`.
 - [x] Send the Content-Security-Policy, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, Cross-Origin-Opener-Policy and Strict-Transport-Security headers. Loosen the Content-Security-Policy if you later add Google Fonts, scripts or embeds, or they'll be blocked
 - [ ] Check that the page still looks right with the headers on (open the browser console and look for blocked resources)
 - [ ] Scan the live site at securityheaders.com and aim for an A
@@ -64,6 +64,6 @@ The server sends these with every response. They're listed in `SECURITY_HEADERS`
 
 ## 8. After launch
 - [ ] Set up a free uptime check, such as UptimeRobot, that emails you if the site goes down
-- [ ] Turn on GitHub Dependabot alerts (repo → Settings → Advanced Security). They only send alerts, no code runs, and they flag security fixes for the Python packages in `requirements.txt`
+- [ ] Turn on GitHub Dependabot alerts (repo → Settings → Advanced Security). They only send alerts, and no code runs. The server has no libraries, so they matter less now, but they also cover the Docker base image
 - [ ] Look over your GitHub, registrar and host accounts every few months: active sessions, connected apps and access tokens
 - [ ] Re-scan the security headers whenever you add a script, font or embed

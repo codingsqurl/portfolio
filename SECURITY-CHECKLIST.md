@@ -33,7 +33,7 @@ The laptop holds your logged-in GitHub, Fly and email sessions. If it's stolen o
 - [x] `.env` is in `.gitignore`, so a secrets file can't be committed by accident
 - [x] `main` is protected from force-pushes and deletion
 - [ ] Turn on GitHub secret scanning and push protection (repo → Settings → Advanced Security), so GitHub blocks a push that contains a key
-- [ ] Turn on Dependabot alerts for the Python packages in `requirements.txt`
+- [ ] Turn on Dependabot alerts. The server has no libraries, but they also flag an outdated Docker base image
 - [ ] Read any pull request from someone else line by line before merging. The deploy runs whatever is in `main`
 
 ## 5. Phishing and scams

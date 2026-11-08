@@ -1,28 +1,33 @@
 # The recipe Fly.io follows to package the site and its server into a container.
+# It has two steps: compile the Java code with the full JDK, then copy just the
+# result into a much smaller image that can only run Java, not build it.
 
-FROM python:3.12-slim
+# ---------- Step 1: compile ----------
+FROM eclipse-temurin:21-jdk-alpine AS build
+WORKDIR /build
+COPY server/src/ src/
+RUN javac -d classes --release 21 $(find src -name '*.java')
 
-# Print logs straight away, and don't litter the container with .pyc files.
-ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+# ---------- Step 2: the image that actually runs ----------
+# The JRE ("Java runtime") has no compiler, so there are fewer programs inside to exploit.
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /srv
 
-# Install packages first, so Docker can reuse this step when only the site changes.
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Only the server and the public site files go in. Notes like README.md and
-# CHECKLIST.md never reach the live server.
-COPY app/ app/
+# Only the compiled server and the public site files go in. Notes like README.md
+# and the checklists never reach the live server, and neither does the source code.
+COPY --from=build /build/classes/ classes/
 COPY index.html 404.html style.css favicon.svg og-image.png robots.txt ./
 
 # Run as a regular user rather than root, so a bug in the server can't take over the container.
-RUN useradd --system --no-create-home web
+RUN adduser -S -H web
 USER web
 
 # Most hosts tell the server which port to use through $PORT. If none is given, use 8080.
 ENV PORT=8080
 EXPOSE 8080
-# "exec" lets the host stop the server cleanly. --proxy-headers trusts the host's front door to say whether the visitor used https.
-# --no-server-header stops every response announcing "uvicorn", which tells attackers what to aim at.
-CMD exec uvicorn app.main:app --host 0.0.0.0 --port "$PORT" --proxy-headers --forwarded-allow-ips "*" --no-server-header
+# "exec" lets the host stop the server cleanly.
+# The memory settings keep Java well inside Fly's smallest (256 MB) machine:
+# a 96 MB cap for the site's data, the simplest garbage collector, and small thread stacks.
+CMD exec java -Xmx96m -Xss512k -XX:+UseSerialGC -XX:MaxMetaspaceSize=48m -XX:+ExitOnOutOfMemoryError \
+    -cp classes portfolio.Server

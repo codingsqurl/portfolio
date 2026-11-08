@@ -1,7 +1,8 @@
 # portfolio
 
-My web dev portfolio: hand-written HTML and CSS, served by a small Python
-(FastAPI) server on Fly.io. GitHub only stores the code. Nothing runs here.
+My web dev portfolio: hand-written HTML and CSS, served by a small Java server
+on Fly.io. The server uses only what comes with Java 21, with no framework or
+libraries. GitHub only stores the code. Nothing runs here.
 
 Live at https://codingsqurl.fly.dev
 
@@ -10,7 +11,7 @@ Live at https://codingsqurl.fly.dev
 - Serves the page, plus an explicit list of public files. Nothing else in the repo is reachable.
 - Fills the Work section with cards for my public GitHub repos and refreshes them every hour.
 - Draws my GitHub contribution graph for the past year, refreshed every hour.
-- Runs every request through a firewall (`app/firewall.py`) that blocks floods, scanners and anything that isn't a plain page visit.
+- Runs every request through a firewall (`server/src/portfolio/Firewall.java`) that blocks floods, scanners and anything that isn't a plain page visit.
 - Sends the security headers and caching rules with every response.
 
 ## Security
@@ -25,13 +26,33 @@ Run `live-server` in this folder. The browser reloads every time you save.
 
 ## Run the real server locally
 
+You need Java 21 (`brew install openjdk@21`). Then:
+
 ```
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-.venv/bin/uvicorn app.main:app --reload --port 8000
+./run.sh
 ```
 
-Then open http://127.0.0.1:8000
+Then open http://127.0.0.1:8000. After changing a `.java` file, stop it with
+Ctrl-C and run it again.
+
+To update the backup project cards and contribution graph saved in `index.html`
+(what the site shows if GitHub can't be reached):
+
+```
+./run.sh refresh
+```
+
+## The code
+
+All in `server/src/portfolio/`:
+
+- `Server.java`: starts the server, picks the page for each address, adds the headers
+- `Firewall.java`: turns away bad requests before they reach the site
+- `Projects.java`: the project cards, from GitHub's list of repos
+- `Contributions.java`: the contribution graph
+- `Json.java`: reads GitHub's repo list (Java has no JSON reader built in)
+- `Html.java`: makes text from GitHub safe to put in the page
+- `Refresh.java`: what `./run.sh refresh` runs
 
 ## Deploy
 

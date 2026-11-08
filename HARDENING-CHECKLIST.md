@@ -5,7 +5,7 @@ Hardening means shrinking what an attacker can reach and what they can do if the
 ## 1. Network and firewall
 - [x] Only web traffic reaches the server. Fly opens ports 80 and 443 and nothing else, so there's no SSH or database port to attack
 - [x] Plain `http://` is redirected to `https://` (`force_https` in `fly.toml`)
-- [x] An application firewall checks every request before the server does (`app/firewall.py`):
+- [x] An application firewall checks every request before the server does (`server/src/portfolio/Firewall.java`):
   - [x] Only `GET` and `HEAD` are allowed. Everything else gets `405`
   - [x] Requests for any other site name get `421`. This stops bots that scan raw IP addresses
   - [x] Addresses longer than 2,048 characters get `414`
@@ -19,7 +19,7 @@ Hardening means shrinking what an attacker can reach and what they can do if the
 ## 2. What the server will serve
 - [x] Only an explicit list of files can be served. The README, checklists and server code can't be reached, even by guessing
 - [x] Only the public site files are copied into the container (`Dockerfile`), so notes never reach the live server
-- [x] FastAPI's automatic `/docs`, `/redoc` and `/openapi.json` pages are turned off
+- [x] There's no framework, so there are no automatic admin, docs or debug pages to find
 - [x] Missing pages get the plain `404.html`, never an error message showing code or file paths
 - [x] Everything from GitHub (repo names, descriptions, contribution counts) is HTML-escaped before it goes on the page
 
@@ -32,17 +32,18 @@ Hardening means shrinking what an attacker can reach and what they can do if the
 - [ ] Re-scan at securityheaders.com and observatory.mozilla.org after any change to the headers
 
 ## 4. The container
-- [x] Built on the small `python:3.12-slim` image, so there are fewer programs inside to exploit
+- [x] Built on the small `eclipse-temurin:21-jre-alpine` image. It can run Java but not compile it, so there are fewer programs inside to exploit
+- [x] The source code stays in the build step. Only the compiled classes go in the image that runs
+- [x] Java's memory is capped so a flood can't push the machine past its 256 MB
 - [x] The server runs as a regular user (`web`), not root
-- [x] Responses don't announce the server software (`--no-server-header`)
+- [x] Responses don't announce the server software (Java's built-in server sends no `Server` header)
 - [x] No secrets are stored in the image
-- [ ] Pin the base image to an exact version (for example `python:3.12.8-slim`) so a deploy can't silently pull a changed image, and bump it on purpose every month or two
+- [ ] Pin the base image to an exact version (an exact tag like `21.0.x_y-jre-alpine` from Docker Hub, instead of just `21-jre-alpine`) so a deploy can't silently pull a changed image, and bump it on purpose every month or two
 
 ## 5. Dependencies
-- [x] Python packages are pinned to exact versions in `requirements.txt`
-- [x] The GitHub cards and contribution graph use only Python's built-in libraries, so there are fewer packages to trust
-- [ ] Turn on Dependabot alerts, and update FastAPI, Starlette and Uvicorn when a security fix comes out
-- [ ] Every few months, run `.venv/bin/pip install pip-audit && .venv/bin/pip-audit -r requirements.txt` to check for known holes
+- [x] No libraries at all. The server is built only from what comes with Java 21, so there are no packages to trust or patch
+- [ ] Keep Java itself updated: `brew upgrade openjdk@21` on your Mac, and redeploy every month or two so Fly pulls the latest `21-jre-alpine` image with its security fixes
+- [ ] Turn on Dependabot alerts, which also watch the Docker base image
 
 ## 6. Fly.io
 - [x] One small machine that stops when idle, which also limits how much a flood can cost you

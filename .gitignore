@@ -5,6 +5,8 @@
 # Secrets and installed packages, if you ever add them
 .env
 node_modules/
-# Python's local packages and compiled files
+# Compiled Java classes from ./run.sh
+build/
+# Leftovers from the old Python server
 .venv/
 __pycache__/
