@@ -9,7 +9,15 @@ Live at https://codingsqurl.fly.dev
 
 - Serves the page, plus an explicit list of public files. Nothing else in the repo is reachable.
 - Fills the Work section with cards for my public GitHub repos and refreshes them every hour.
+- Draws my GitHub contribution graph for the past year, refreshed every hour.
+- Runs every request through a firewall (`app/firewall.py`) that blocks floods, scanners and anything that isn't a plain page visit.
 - Sends the security headers and caching rules with every response.
+
+## Security
+
+- `CHECKLIST.md`: going live
+- `SECURITY-CHECKLIST.md`: accounts, devices, phishing and what to do if something goes wrong
+- `HARDENING-CHECKLIST.md`: the server, container, firewall and Fly.io setup
 
 ## Work on the design
 
