@@ -39,7 +39,8 @@ Your site is plain HTML and CSS with no forms, no JavaScript and no server code,
 ## 5. HTTPS
 - [x] Confirm the host issued a certificate and the site loads over `https://`
 - [x] Force all `http://` traffic to redirect to `https://`
-- [ ] Once HTTPS has worked for a while, turn on HSTS so browsers never try plain http again (the header is in step 6)
+- [x] Once HTTPS has worked for a while, turn on HSTS so browsers never try plain http again (the header is in step 6)
+      (GitHub Pages already sends HSTS on github.io. Recheck this if you move to your own domain, because Pages doesn't send it there.)
 
 ## 6. Security headers
 On Cloudflare Pages or Netlify, add a file named `_headers` to the repo:
