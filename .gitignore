@@ -1,0 +1,7 @@
+# Mac's hidden folder-settings files
+.DS_Store
+# Local Claude Code tooling, not part of the site
+.claude/
+# Secrets and installed packages, if you ever add them
+.env
+node_modules/
