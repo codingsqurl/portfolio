@@ -447,6 +447,18 @@ a:hover {
   margin-bottom: 8px;
 }
 
+/* The "View code →" links on cards that come from GitHub. */
+.card .card-links {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.card .card-links a {
+  color: #2997ff;
+}
+
 
 /* ---------- Skill chips ---------- */
 

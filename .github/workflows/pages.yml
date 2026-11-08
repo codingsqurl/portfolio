@@ -9,6 +9,9 @@ on:
     branches: [main]
   # Adds a "Run workflow" button on the Actions tab for redeploying by hand.
   workflow_dispatch:
+  # Redeploys every day at 6am UTC, so new repos and descriptions show up without a push.
+  schedule:
+    - cron: "0 6 * * *"
 
 # The least access the deploy needs: read the code, write to Pages.
 permissions:
@@ -36,6 +39,12 @@ jobs:
           cp index.html style.css 404.html favicon.svg og-image.png robots.txt _site/
           # Add new files or folders here when you create them, e.g. images:
           # cp -r images _site/
+
+      # Writes a card for each public GitHub repo into the Work section.
+      - name: Add GitHub project cards
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/sync_projects.py _site/index.html
 
       # GitHub Pages can't send security headers, so the rules go in a <meta> tag instead.
       # If you add Google Fonts, scripts or embeds later, loosen this or they'll be blocked.
