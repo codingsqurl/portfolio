@@ -23,5 +23,5 @@ USER web
 # Most hosts tell the server which port to use through $PORT. If none is given, use 8080.
 ENV PORT=8080
 EXPOSE 8080
-# --proxy-headers trusts the host's front door to say whether the visitor used https.
-CMD uvicorn app.main:app --host 0.0.0.0 --port "$PORT" --proxy-headers --forwarded-allow-ips "*"
+# "exec" lets the host stop the server cleanly. --proxy-headers trusts the host's front door to say whether the visitor used https.
+CMD exec uvicorn app.main:app --host 0.0.0.0 --port "$PORT" --proxy-headers --forwarded-allow-ips "*"
