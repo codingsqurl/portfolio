@@ -1,0 +1,27 @@
+# Fly.io settings for the portfolio. Deploy with: fly deploy
+
+app = "codingsqurl"
+# Denver, the closest region to Colorado Springs.
+primary_region = "den"
+
+[http_service]
+  internal_port = 8080
+  # Send every http:// visit to https://.
+  force_https = true
+  # Stop the machine when nobody's visiting (it costs nothing while stopped),
+  # and start it again on the next visit. That restart takes about a second.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "5s"
+    interval = "30s"
+    method = "GET"
+    path = "/healthz"
+    timeout = "5s"
+
+# The smallest machine Fly offers, which is plenty for this site.
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

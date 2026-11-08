@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<!-- GitHub Pages shows this page whenever someone visits an address that doesn't exist. -->
+<!-- The server (app/main.py) shows this page whenever someone visits an address that doesn't exist. -->
 <html lang="en">
 
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Same safety rules as index.html. This page keeps its styles inside itself (see below), so it also allows inline styles. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <!-- Tells search engines not to list this page. -->
     <meta name="robots" content="noindex">
     <title>Page not found · coding squrl</title>
-    <!-- The tab icon. The full path is needed here for the same reason as the styles below.
-         Change it to "/favicon.svg" if you move to your own domain. -->
-    <link rel="icon" href="/portfolio/favicon.svg" type="image/svg+xml">
+    <!-- The tab icon. The full path is needed here for the same reason as the styles below. -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <!-- This page can show up at any address, even a deep one like /a/b/c, so a link to
          style.css could point to the wrong place. Keeping the styles here avoids that. -->
     <style>
@@ -72,8 +69,7 @@
     <main>
       <h1>Page not found.</h1>
       <p>That address doesn't lead anywhere. Let's get you back.</p>
-      <!-- "/" means the root of the site, so this works no matter how deep the bad address was.
-           If the site lives at codingsqurl.github.io/portfolio/, change this to "/portfolio/". -->
+      <!-- "/" means the root of the site, so this works no matter how deep the bad address was. -->
       <a class="button" href="/">Back to the homepage</a>
     </main>
   </body>

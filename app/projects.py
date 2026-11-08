@@ -1,18 +1,19 @@
-"""Fills the Work section with project cards from GitHub.
+"""Builds the Work section's project cards from GitHub.
 
 Every public repo on the account that isn't a fork or archived gets a card,
-newest first. The cards are written into the HTML file between these two
-comments, replacing whatever was there before:
+newest first. The cards go between these two comments in index.html,
+replacing whatever was there before:
 
     <!-- GITHUB-PROJECTS -->
     <!-- /GITHUB-PROJECTS -->
 
-The deploy runs this on the copy it publishes, so the live site is always
-current. To preview the cards locally, run it on index.html:
+The web server (app/main.py) does this while it runs, so the live site is
+always current. Whatever cards are saved in index.html are the backup it
+shows if GitHub can't be reached. To refresh that backup, run:
 
-    python3 scripts/sync_projects.py index.html
+    python3 -m app.projects index.html
 
-Only the Python standard library is used, so there is nothing to install.
+Only the Python standard library is used here.
 """
 
 import html
@@ -29,6 +30,7 @@ SKIP = {"portfolio"}
 
 START = "<!-- GITHUB-PROJECTS -->"
 END = "<!-- /GITHUB-PROJECTS -->"
+PATTERN = re.compile(re.escape(START) + r".*?" + re.escape(END), re.S)
 
 
 def fetch_repos():
@@ -38,8 +40,15 @@ def fetch_repos():
     token = os.environ.get("GITHUB_TOKEN")
     if token:
         request.add_header("Authorization", f"Bearer {token}")
-    with urllib.request.urlopen(request, timeout=20) as response:
-        return json.load(response)
+    with urllib.request.urlopen(request, timeout=10) as response:
+        repos = json.load(response)
+
+    repos = [
+        r for r in repos
+        if not r["private"] and not r["fork"] and not r["archived"] and r["name"] not in SKIP
+    ]
+    repos.sort(key=lambda r: r["pushed_at"], reverse=True)
+    return repos
 
 
 def card(repo):
@@ -62,37 +71,30 @@ def card(repo):
 """
 
 
+def has_markers(page):
+    return PATTERN.search(page) is not None
+
+
+def insert_cards(page, repos):
+    """Returns the page with the cards between the markers swapped for fresh ones."""
+    # Line up the closing marker with the opening one.
+    cards = "\n" + "".join(card(r) for r in repos) + "            "
+    return PATTERN.sub(lambda _: START + cards + END, page)
+
+
 def main():
     if len(sys.argv) != 2:
-        sys.exit("usage: python3 scripts/sync_projects.py <file.html>")
+        sys.exit("usage: python3 -m app.projects <file.html>")
     path = sys.argv[1]
-
-    try:
-        repos = fetch_repos()
-    except Exception as error:
-        # Don't block the deploy if GitHub is having a bad day: keep the cards already in the file.
-        print(f"warning: couldn't reach GitHub ({error}), keeping the existing cards")
-        return
-
-    repos = [
-        r for r in repos
-        if not r["private"] and not r["fork"] and not r["archived"] and r["name"] not in SKIP
-    ]
-    repos.sort(key=lambda r: r["pushed_at"], reverse=True)
 
     with open(path, encoding="utf-8") as f:
         page = f.read()
-
-    pattern = re.compile(re.escape(START) + r".*?" + re.escape(END), re.S)
-    if not pattern.search(page):
+    if not has_markers(page):
         sys.exit(f"error: {START} and {END} markers not found in {path}")
 
-    # Line up the closing marker with the opening one.
-    cards = "\n" + "".join(card(r) for r in repos) + "            "
-    page = pattern.sub(lambda _: START + cards + END, page)
-
+    repos = fetch_repos()
     with open(path, "w", encoding="utf-8") as f:
-        f.write(page)
+        f.write(insert_cards(page, repos))
     print(f"wrote {len(repos)} project cards: {', '.join(r['name'] for r in repos)}")
 
 

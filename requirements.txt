@@ -1,0 +1,4 @@
+# The Python packages the server needs. Versions are pinned so every deploy is the same.
+fastapi==0.115.6
+starlette==0.41.3
+uvicorn==0.32.1

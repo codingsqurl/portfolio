@@ -1,0 +1,8 @@
+# Keep these out of the build, so they can't end up on the server.
+.git
+.github
+.claude
+.venv
+.env
+**/__pycache__
+.DS_Store

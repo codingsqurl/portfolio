@@ -5,3 +5,6 @@
 # Secrets and installed packages, if you ever add them
 .env
 node_modules/
+# Python's local packages and compiled files
+.venv/
+__pycache__/
