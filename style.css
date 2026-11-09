@@ -601,12 +601,14 @@ a:hover {
   font-size: 9px;
 }
 
-/* Shades from "no commits" (0) to "lots of commits" (4): GitHub's own dark-mode greens. */
-.contrib-l0 { fill: #161b22; background-color: #161b22; }
-.contrib-l1 { fill: #0e4429; background-color: #0e4429; }
-.contrib-l2 { fill: #006d32; background-color: #006d32; }
-.contrib-l3 { fill: #26a641; background-color: #26a641; }
-.contrib-l4 { fill: #39d353; background-color: #39d353; }
+/* Shades from "no commits" (0) to "lots of commits" (4). These are GitHub's exact
+   dark-mode colours, copied from its own stylesheet (--contribution-default-bgColor-0
+   to -4 in github.com's dark theme, November 2026). If GitHub changes them, update these. */
+.contrib-l0 { fill: #151b23; background-color: #151b23; }
+.contrib-l1 { fill: #033a16; background-color: #033a16; }
+.contrib-l2 { fill: #196c2e; background-color: #196c2e; }
+.contrib-l3 { fill: #2ea043; background-color: #2ea043; }
+.contrib-l4 { fill: #56d364; background-color: #56d364; }
 
 .contrib-legend {
   display: flex;
