@@ -5,6 +5,8 @@
 .venv
 build
 build-test
+build-pages
+.pages-worktree
 server/test
 .env
 **/__pycache__

@@ -52,9 +52,11 @@ public final class Server {
             "css", "text/css; charset=utf-8",
             "html", "text/html; charset=utf-8");
 
-    // How often to ask GitHub for the latest repos, and how soon to try again if it fails.
-    static final long PROJECTS_REFRESH = 60 * 60; // 1 hour
-    static final long PROJECTS_RETRY = 60 * 5;    // 5 minutes
+    // How often to ask GitHub for the latest repos and contribution graph, and how soon to
+    // try again if it fails. Every 10 minutes keeps the graph close to GitHub's own, and is
+    // 6 requests an hour, well inside GitHub's limit of 60 without a token.
+    static final long REFRESH = 60 * 10;        // 10 minutes
+    static final long RETRY = 60 * 2;           // 2 minutes
 
     // The browser's safety rules: only load files from this site, never run scripts,
     // and never let another site show this one inside a frame.
@@ -196,17 +198,17 @@ public final class Server {
             if (OFFLINE) {
                 html = page;
                 etag = "\"" + sha256(page.getBytes(StandardCharsets.UTF_8)).substring(0, 16) + "\"";
-                nextRefresh = System.nanoTime() + PROJECTS_REFRESH * 1_000_000_000L;
+                nextRefresh = System.nanoTime() + REFRESH * 1_000_000_000L;
                 return;
             }
 
             try {
                 page = Projects.insertCards(page, Projects.fetchRepos());
-                nextRefresh = System.nanoTime() + PROJECTS_REFRESH * 1_000_000_000L;
+                nextRefresh = System.nanoTime() + REFRESH * 1_000_000_000L;
             } catch (Exception error) {
                 // Keep the cards saved in index.html and try GitHub again soon.
                 System.err.println("couldn't reach GitHub (" + error + "), using the saved project cards");
-                nextRefresh = System.nanoTime() + PROJECTS_RETRY * 1_000_000_000L;
+                nextRefresh = System.nanoTime() + RETRY * 1_000_000_000L;
             }
 
             try {
@@ -214,7 +216,7 @@ public final class Server {
             } catch (Exception error) {
                 // Keep the graph saved in index.html and try again soon.
                 System.err.println("couldn't load the contribution graph (" + error + "), using the saved one");
-                nextRefresh = System.nanoTime() + PROJECTS_RETRY * 1_000_000_000L;
+                nextRefresh = System.nanoTime() + RETRY * 1_000_000_000L;
             }
 
             html = page;

@@ -9,8 +9,8 @@ Live at https://codingsqurl.fly.dev
 ## What the server does
 
 - Serves the page, plus an explicit list of public files. Nothing else in the repo is reachable.
-- Fills the Work section with cards for my public GitHub repos and refreshes them every hour.
-- Draws my GitHub contribution graph for the past year, refreshed every hour.
+- Fills the Work section with cards for my public GitHub repos, refreshed every 10 minutes.
+- Draws my GitHub contribution graph for the past year in GitHub's own colours, refreshed every 10 minutes.
 - Runs every request through a firewall (`server/src/portfolio/Firewall.java`) that blocks floods, scanners and anything that isn't a plain page visit.
 - Sends the security headers and caching rules with every response.
 
@@ -53,6 +53,17 @@ All in `server/src/portfolio/`:
 - `Json.java`: reads GitHub's repo list (Java has no JSON reader built in)
 - `Html.java`: makes text from GitHub safe to put in the page
 - `Refresh.java`: what `./run.sh refresh` runs
+
+## GitHub Pages copy
+
+While the Fly.io server isn't live, a static copy runs on GitHub Pages at
+https://codingsqurl.github.io/portfolio/, published from the `gh-pages` branch
+(no GitHub Actions). It can't refresh itself, so to update its cards and
+contribution graph with the latest from GitHub:
+
+```
+./run.sh pages
+```
 
 ## Tests
 

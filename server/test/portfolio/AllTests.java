@@ -21,6 +21,7 @@ public final class AllTests {
         ContributionsTest.run();
         ServerTest.run();
         FirewallTest.run();
+        SnapshotTest.run();
 
         System.out.println();
         System.out.println(Check.passed + " passed, " + Check.failed + " failed");

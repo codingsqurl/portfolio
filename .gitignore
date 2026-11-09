@@ -8,6 +8,8 @@ node_modules/
 # Compiled Java classes from ./run.sh
 build/
 build-test/
+build-pages/
+.pages-worktree/
 # Leftovers from the old Python server
 .venv/
 __pycache__/
