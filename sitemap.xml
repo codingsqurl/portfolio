@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The list of pages search engines should know about. There's only one page, so
+     there's only one address. Snapshot.java swaps in the GitHub Pages address and
+     today's date for the copy published there. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://codingsqurl.github.io/portfolio/</loc>
+    <lastmod>2026-11-10</lastmod>
+  </url>
+</urlset>

@@ -1,3 +1,6 @@
 # Any search engine may list every page on this site.
 User-agent: *
 Allow: /
+
+# Where the list of pages is.
+Sitemap: https://codingsqurl.github.io/portfolio/sitemap.xml
