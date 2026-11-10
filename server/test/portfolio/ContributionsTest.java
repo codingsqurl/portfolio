@@ -36,14 +36,21 @@ final class ContributionsTest {
         for (int i = 0; i < days; i++) {
             list.add(new Contributions.Day(first.plusDays(i), i % 5, "day " + i));
         }
-        return new Contributions.Calendar(count, list);
+        return new Contributions.Calendar(count, "2026", list);
     }
 
     static void run() {
         section("Contributions");
 
-        test("reads the year's total, commas and all", () -> {
+        test("reads the total, commas and all", () -> {
             equal(1234, Contributions.parseCalendar(PAGE).count());
+        });
+
+        test("reads which stretch of time the total covers", () -> {
+            equal("the last year", Contributions.parseCalendar(PAGE).period());
+            String yearPage = PAGE.replace("in the last year", "in 2026");
+            equal("2026", Contributions.parseCalendar(yearPage).period());
+            equal(1234, Contributions.parseCalendar(yearPage).count());
         });
 
         test("reads each day's date and shade, sorted by date", () -> {
@@ -98,14 +105,23 @@ final class ContributionsTest {
             contains(svg, ">Fri</text>");
         });
 
-        test("writes the total with commas, and says contribution for one", () -> {
-            contains(Contributions.graph(calendar(1234, LocalDate.of(2026, 1, 4), 7)), "1,234 contributions in the last year");
-            contains(Contributions.graph(calendar(1, LocalDate.of(2026, 1, 4), 7)), "1 contribution in the last year");
+        test("writes the total with commas and the year, and says contribution for one", () -> {
+            contains(Contributions.graph(calendar(1234, LocalDate.of(2026, 1, 4), 7)), "1,234 contributions in 2026");
+            contains(Contributions.graph(calendar(1, LocalDate.of(2026, 1, 4), 7)), "1 contribution in 2026");
+        });
+
+        test("a whole calendar year: Jan 1st to Dec 31st, labelled from Jan to Dec", () -> {
+            // 2026 starts on a Thursday, so January 1st sits in the fifth row of the first column.
+            String svg = Contributions.graph(calendar(5, LocalDate.of(2026, 1, 1), 365));
+            contains(svg, "x=\"" + Contributions.LEFT + "\" y=\"" + (Contributions.TOP + 4 * Contributions.STEP) + "\"");
+            contains(svg, "<text x=\"" + Contributions.LEFT + "\" y=\"10\">Jan</text>");
+            contains(svg, ">Dec</text>");
+            equal(365, svg.split("<rect ", -1).length - 1);
         });
 
         test("tooltips are escaped", () -> {
             List<Contributions.Day> days = List.of(new Contributions.Day(LocalDate.of(2026, 1, 4), 1, "<b>bold</b>"));
-            String svg = Contributions.graph(new Contributions.Calendar(1, days));
+            String svg = Contributions.graph(new Contributions.Calendar(1, "2026", days));
             lacks(svg, "<b>");
             contains(svg, "<title>&lt;b&gt;bold&lt;/b&gt;</title>");
         });

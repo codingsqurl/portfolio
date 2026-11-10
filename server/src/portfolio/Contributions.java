@@ -5,6 +5,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -19,6 +20,10 @@ import java.util.regex.Pattern;
 /**
  * Builds the GitHub contribution graph: a year of squares, one per day,
  * darker on the days with more commits.
+ *
+ * It shows the current calendar year, January to December, the same as picking
+ * this year with the year buttons next to the graph on my GitHub profile. Days
+ * still to come show as empty squares, just like on GitHub.
  *
  * GitHub publishes the graph for every account as a small HTML page, so no
  * token is needed. We read the date and shade of each day from it and draw our
@@ -48,11 +53,13 @@ final class Contributions {
 
     static final Pattern DAY = Pattern.compile("<td\\b[^>]*\\bContributionCalendar-day\\b[^>]*>");
     static final Pattern TOOLTIP = Pattern.compile("<tool-tip\\b[^>]*\\bfor=\"([^\"]+)\"[^>]*>([^<]*)</tool-tip>");
-    static final Pattern TOTAL = Pattern.compile("([\\d,]+)\\s+contributions?\\s+in the last year");
+    // GitHub's caption: "112 contributions in 2026", or "in the last year" without a year picked.
+    static final Pattern TOTAL = Pattern.compile("([\\d,]+)\\s+contributions?\\s+in\\s+(the last year|\\d{4})");
 
     record Day(LocalDate date, int level, String label) {}
 
-    record Calendar(int count, List<Day> days) {}
+    /** The total, the stretch of time it covers ("2026" or "the last year"), and the days. */
+    record Calendar(int count, String period, List<Day> days) {}
 
     static String attr(String tag, String name) {
         Matcher found = Pattern.compile("\\b" + name + "=\"([^\"]*)\"").matcher(tag);
@@ -60,8 +67,9 @@ final class Contributions {
     }
 
     static Calendar fetchCalendar() throws Exception {
-        HttpRequest request = HttpRequest.newBuilder(
-                        URI.create("https://github.com/users/" + Projects.USER + "/contributions"))
+        int year = LocalDate.now(ZoneOffset.UTC).getYear();
+        HttpRequest request = HttpRequest.newBuilder(URI.create("https://github.com/users/" + Projects.USER
+                        + "/contributions?from=" + year + "-01-01&to=" + year + "-12-31"))
                 .timeout(Duration.ofSeconds(10))
                 .header("User-Agent", Projects.USER + "-portfolio")
                 .build();
@@ -97,8 +105,10 @@ final class Contributions {
         days.sort(Comparator.comparing(Day::date));
 
         Matcher total = TOTAL.matcher(page);
-        int count = total.find() ? Integer.parseInt(total.group(1).replace(",", "")) : 0;
-        return new Calendar(count, days);
+        boolean found = total.find();
+        int count = found ? Integer.parseInt(total.group(1).replace(",", "")) : 0;
+        String period = found ? total.group(2) : String.valueOf(days.get(days.size() - 1).date().getYear());
+        return new Calendar(count, period, days);
     }
 
     static String graph(Calendar calendar) {
@@ -123,8 +133,11 @@ final class Contributions {
                     .append(CELL).append("\" rx=\"2\"><title>").append(Html.escape(day.label()))
                     .append("</title></rect>");
             // Label a month above the first week it starts in, unless it's too close to the last label.
+            // The very first column counts too when the graph starts on the 1st, like January 1st.
             boolean farEnough = monthWeeks.isEmpty() || week - monthWeeks.get(monthWeeks.size() - 1) >= 3;
-            if (day.date().getDayOfMonth() <= 7 && weekday == 0 && farEnough) {
+            boolean startsMonth = (day.date().getDayOfMonth() <= 7 && weekday == 0)
+                    || (week == 0 && day.date().getDayOfMonth() == 1);
+            if (startsMonth && farEnough) {
                 monthWeeks.add(week);
                 monthNames.add(day.date().format(month));
             }
@@ -149,12 +162,12 @@ final class Contributions {
 
         return "\n"
                 + "            <figure class=\"contrib\">\n"
-                + "              <figcaption>" + count + " " + noun + " in the last year</figcaption>\n"
+                + "              <figcaption>" + count + " " + noun + " in " + calendar.period() + "</figcaption>\n"
                 // On a phone the graph is wider than the screen, so it scrolls sideways inside its card.
                 // tabindex lets keyboard users scroll it too.
                 + "              <div class=\"contrib-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Contribution graph, scrolls sideways\">"
                 + "<svg viewBox=\"0 0 " + width + " " + height + "\" role=\"img\" aria-label=\"GitHub contribution graph: "
-                + count + " " + noun + " in the last year\">" + labels + squares + "</svg></div>\n"
+                + count + " " + noun + " in " + calendar.period() + "\">" + labels + squares + "</svg></div>\n"
                 + "              <p class=\"contrib-legend\" aria-hidden=\"true\">Less <span class=\"contrib-l0\"></span><span class=\"contrib-l1\"></span><span class=\"contrib-l2\"></span><span class=\"contrib-l3\"></span><span class=\"contrib-l4\"></span> More</p>\n"
                 + "            </figure>\n"
                 + "          ";
