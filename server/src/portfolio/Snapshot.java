@@ -56,7 +56,7 @@ public final class Snapshot {
         Files.writeString(out.resolve(".nojekyll"), "");
 
         System.out.println("built " + out + ": " + repos.size() + " project cards, "
-                + calendar.count() + " contributions in the last year");
+                + calendar.count() + " contributions in " + calendar.period());
     }
 
     /** The security policy as a meta tag. frame-ancestors is dropped: browsers ignore it there. */
