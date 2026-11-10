@@ -701,6 +701,34 @@ a:hover {
   background-color: #4752c4;
 }
 
+/* Which Discord button shows (see the comment by the buttons in index.html).
+   Phones and tablets, and anything unsure: the web link, which opens the app if it's installed. */
+.discord-app,
+.discord-fallback {
+  display: none;
+}
+
+/* Computers with a mouse: the button that opens the Discord app, plus the browser fallback. */
+@media (hover: hover) and (pointer: fine) {
+  .discord-web {
+    display: none;
+  }
+
+  .discord-app {
+    display: inline-block;
+  }
+
+  .discord-fallback {
+    display: block;
+    margin: -8px 0 16px;
+  }
+}
+
+.discord-fallback a {
+  color: var(--text-muted);
+  text-decoration: underline;
+}
+
 
 /* ---------- Lights ----------
    The few things that shimmer and glow. It's all CSS, with no script.

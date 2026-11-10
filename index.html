@@ -280,9 +280,17 @@
            which this site's security policy blocks, so we don't use it. -->
       <div class="footer-actions">
         <a class="button button-coffee" href="https://buymeacoffee.com/coding_squrl">☕ Buy me a coffee</a>
-        <!-- Opens my Discord profile, where people can add me as a friend. The number is my Discord user ID. -->
-        <a class="button button-discord" href="https://discord.com/users/557407919063433217">Connect on Discord</a>
+        <!-- Opens my Discord profile, where people can add me as a friend. The number is my Discord user ID.
+             There are two versions of the button, and the stylesheet shows one:
+             - Phones get the normal web link. Phones open it in the Discord app when it's
+               installed, and in the browser when it isn't.
+             - Computers get a discord:// link, which opens the Discord app directly. Browsers
+               won't tell a website whether an app is installed, so a small web link sits below
+               it for people without the app. -->
+        <a class="button button-discord discord-web" href="https://discord.com/users/557407919063433217">Connect on Discord</a>
+        <a class="button button-discord discord-app" href="discord://-/users/557407919063433217">Connect on Discord</a>
       </div>
+      <p class="discord-fallback">No Discord app? <a href="https://discord.com/users/557407919063433217">Open it in your browser</a></p>
       <p>© 2026 coding squrl. Hand-written in HTML &amp; CSS.</p>
     </footer>
 

@@ -26,6 +26,13 @@ final class ServerTest {
             isTrue(home.text().matches("(?s).*href=\"style\\.css\\?v=[0-9a-f]{8}\".*"), "style.css?v=<8 hex>");
         });
 
+        test("the Discord button opens the app on computers, with a web link for phones and as a fallback", () -> {
+            String page = Client.get("/").text();
+            contains(page, "href=\"discord://-/users/557407919063433217\"");
+            contains(page, "class=\"button button-discord discord-web\" href=\"https://discord.com/users/557407919063433217\"");
+            contains(page, "No Discord app? <a href=\"https://discord.com/users/557407919063433217\">");
+        });
+
         test("every page carries the security headers", () -> {
             for (String path : new String[] {"/", "/style.css", "/favicon.svg", "/nope"}) {
                 Client.Reply reply = Client.get(path);
