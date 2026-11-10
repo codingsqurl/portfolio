@@ -25,9 +25,15 @@ import java.util.regex.Pattern;
  * this year with the year buttons next to the graph on my GitHub profile. Days
  * still to come show as empty squares, just like on GitHub.
  *
- * GitHub publishes the graph for every account as a small HTML page, so no
- * token is needed. We read the date and shade of each day from it and draw our
- * own SVG, which needs no script and so passes the site's security policy.
+ * With a GITHUB_TOKEN that has the read:user permission, it asks GitHub's API for
+ * the graph as I see it when logged in: private work included, as plain counts
+ * with no repo names. That's the graph that matches my profile exactly.
+ *
+ * Without a token it falls back to the public graph GitHub publishes as a small
+ * HTML page, which leaves private work out.
+ *
+ * Either way it draws its own SVG, which needs no script and so passes the
+ * site's security policy.
  * The graph goes between these two comments in index.html:
  *
  *     <!-- GITHUB-CONTRIBUTIONS -->
@@ -68,6 +74,10 @@ final class Contributions {
 
     static Calendar fetchCalendar() throws Exception {
         int year = LocalDate.now(ZoneOffset.UTC).getYear();
+        String token = System.getenv("GITHUB_TOKEN");
+        if (token != null && !token.isEmpty()) {
+            return fetchFromApi(token, year);
+        }
         HttpRequest request = HttpRequest.newBuilder(URI.create("https://github.com/users/" + Projects.USER
                         + "/contributions?from=" + year + "-01-01&to=" + year + "-12-31"))
                 .timeout(Duration.ofSeconds(10))
@@ -78,6 +88,96 @@ final class Contributions {
             throw new IllegalStateException("GitHub answered " + response.statusCode());
         }
         return parseCalendar(response.body());
+    }
+
+    // Asks for one calendar year of my contribution graph. Private work counts too, as long
+    // as the token is mine and has the read:user permission.
+    static final String QUERY = "query($login: String!, $from: DateTime!, $to: DateTime!) {"
+            + " user(login: $login) { contributionsCollection(from: $from, to: $to) {"
+            + " contributionCalendar { totalContributions"
+            + " weeks { contributionDays { date contributionCount contributionLevel } } } } } }";
+
+    static Calendar fetchFromApi(String token, int year) throws Exception {
+        String variables = "{\"login\": \"" + Projects.USER + "\", \"from\": \"" + year
+                + "-01-01T00:00:00Z\", \"to\": \"" + year + "-12-31T23:59:59Z\"}";
+        String body = "{\"query\": \"" + QUERY.replace("\"", "\\\"") + "\", \"variables\": " + variables + "}";
+        HttpRequest request = HttpRequest.newBuilder(URI.create("https://api.github.com/graphql"))
+                .timeout(Duration.ofSeconds(10))
+                .header("Authorization", "Bearer " + token)
+                .header("User-Agent", Projects.USER + "-portfolio")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        HttpResponse<String> response = Projects.HTTP.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            throw new IllegalStateException("GitHub's API answered " + response.statusCode());
+        }
+        return parseApi(response.body(), year);
+    }
+
+    // The API names the five shades; the page uses 0 to 4.
+    static final Map<String, Integer> LEVELS = Map.of(
+            "NONE", 0, "FIRST_QUARTILE", 1, "SECOND_QUARTILE", 2, "THIRD_QUARTILE", 3, "FOURTH_QUARTILE", 4);
+
+    /** Reads GitHub's API reply into a calendar, writing each day's tooltip the way GitHub does. */
+    @SuppressWarnings("unchecked")
+    static Calendar parseApi(String json, int year) {
+        Map<String, Object> reply = (Map<String, Object>) Json.parse(json);
+        if (reply.get("errors") != null || reply.get("data") == null) {
+            throw new IllegalStateException("GitHub's API refused the request: " + reply.get("errors"));
+        }
+        Map<String, Object> calendar = (Map<String, Object>) dig(reply, "data", "user", "contributionsCollection",
+                "contributionCalendar");
+        List<Day> days = new ArrayList<>();
+        for (Object week : (List<Object>) calendar.get("weeks")) {
+            for (Object item : (List<Object>) ((Map<String, Object>) week).get("contributionDays")) {
+                Map<String, Object> day = (Map<String, Object>) item;
+                LocalDate date = LocalDate.parse((String) day.get("date"));
+                int count = ((Double) day.get("contributionCount")).intValue();
+                days.add(new Day(date, LEVELS.getOrDefault(day.get("contributionLevel"), 0), tooltip(count, date)));
+            }
+        }
+        if (days.isEmpty()) {
+            throw new IllegalStateException("no days in GitHub's API reply");
+        }
+        days.sort(Comparator.comparing(Day::date));
+        int total = ((Double) calendar.get("totalContributions")).intValue();
+        return new Calendar(total, String.valueOf(year), days);
+    }
+
+    /** "No contributions on January 1st." or "7 contributions on November 3rd.", like GitHub's tooltips. */
+    static String tooltip(int count, LocalDate date) {
+        String when = date.format(DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH)) + " " + ordinal(date.getDayOfMonth());
+        if (count == 0) {
+            return "No contributions on " + when + ".";
+        }
+        return count + (count == 1 ? " contribution" : " contributions") + " on " + when + ".";
+    }
+
+    static String ordinal(int day) {
+        if (day >= 11 && day <= 13) {
+            return day + "th";
+        }
+        switch (day % 10) {
+            case 1: return day + "st";
+            case 2: return day + "nd";
+            case 3: return day + "rd";
+            default: return day + "th";
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Object dig(Map<String, Object> map, String... keys) {
+        Object here = map;
+        for (String key : keys) {
+            if (!(here instanceof Map)) {
+                throw new IllegalStateException("GitHub's API reply is missing " + key);
+            }
+            here = ((Map<String, Object>) here).get(key);
+        }
+        if (here == null) {
+            throw new IllegalStateException("GitHub's API reply is missing " + keys[keys.length - 1]);
+        }
+        return here;
     }
 
     /** Reads each day's date, shade and tooltip out of GitHub's contribution page. Separate

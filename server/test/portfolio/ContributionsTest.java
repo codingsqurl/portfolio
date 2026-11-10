@@ -133,6 +133,40 @@ final class ContributionsTest {
             contains(result, "class=\"contrib-scroll\" tabindex=\"0\"");
         });
 
+        test("reads GitHub's API reply, private work included, with GitHub-style tooltips", () -> {
+            String json = """
+                    {"data": {"user": {"contributionsCollection": {"contributionCalendar": {
+                      "totalContributions": 299,
+                      "weeks": [
+                        {"contributionDays": [
+                          {"date": "2026-01-02", "contributionCount": 7, "contributionLevel": "THIRD_QUARTILE"},
+                          {"date": "2026-01-01", "contributionCount": 0, "contributionLevel": "NONE"}]},
+                        {"contributionDays": [
+                          {"date": "2026-01-03", "contributionCount": 1, "contributionLevel": "FIRST_QUARTILE"}]}
+                      ]}}}}}
+                    """;
+            Contributions.Calendar calendar = Contributions.parseApi(json, 2026);
+            equal(299, calendar.count());
+            equal("2026", calendar.period());
+            equal(3, calendar.days().size());
+            equal(LocalDate.of(2026, 1, 1), calendar.days().get(0).date());
+            equal("No contributions on January 1st.", calendar.days().get(0).label());
+            equal(3, calendar.days().get(1).level());
+            equal("7 contributions on January 2nd.", calendar.days().get(1).label());
+            equal("1 contribution on January 3rd.", calendar.days().get(2).label());
+        });
+
+        test("an API error is reported, so the saved graph is kept", () -> {
+            fails(() -> Contributions.parseApi("{\"errors\": [{\"message\": \"Bad credentials\"}]}", 2026));
+            fails(() -> Contributions.parseApi("{\"data\": {\"user\": null}}", 2026));
+        });
+
+        test("day numbers get the right ending: 1st, 2nd, 3rd, 4th, 11th, 12th, 13th, 21st, 22nd", () -> {
+            equal("1st 2nd 3rd 4th 11th 12th 13th 21st 22nd 23rd 31st",
+                    String.join(" ", java.util.stream.IntStream.of(1, 2, 3, 4, 11, 12, 13, 21, 22, 23, 31)
+                            .mapToObj(Contributions::ordinal).toList()));
+        });
+
         test("index.html still has both sets of markers, so refreshes have somewhere to go", () -> {
             String page = Files.readString(Path.of("index.html"));
             isTrue(Contributions.hasMarkers(page), "contribution graph markers");

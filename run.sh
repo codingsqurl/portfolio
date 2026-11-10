@@ -19,6 +19,14 @@ fi
 rm -rf build
 javac -d build --release 21 $(find server/src -name '*.java')
 
+# Use my GitHub login (from the gh tool), so the contribution graph includes private
+# work like my profile does. The token is only used to ask GitHub; it never goes into
+# the page or the published files. The tests don't use it: they never call GitHub.
+if [ -z "$GITHUB_TOKEN" ] && command -v gh >/dev/null 2>&1; then
+  GITHUB_TOKEN="$(gh auth token 2>/dev/null || true)"
+  export GITHUB_TOKEN
+fi
+
 if [ "$1" = "test" ]; then
   # The tests sit beside the server code but never go in the container.
   rm -rf build-test

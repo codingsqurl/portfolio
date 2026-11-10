@@ -10,7 +10,7 @@ Live at https://codingsqurl.fly.dev
 
 - Serves the page, plus an explicit list of public files. Nothing else in the repo is reachable.
 - Fills the Work section with cards for my public GitHub repos, refreshed every 10 minutes.
-- Draws my GitHub contribution graph for the current year (January to December, like picking the year on my GitHub profile) in GitHub's own colours, refreshed every 10 minutes.
+- Draws my GitHub contribution graph for the current year (January to December, like picking the year on my GitHub profile) in GitHub's own colours, refreshed every 10 minutes. With a `GITHUB_TOKEN` that has the `read:user` permission it includes private work, so it matches my profile exactly. `./run.sh` uses my `gh` login for that automatically; on Fly.io, set it with `fly secrets set GITHUB_TOKEN=...` (a classic token with only `read:user`).
 - Runs every request through a firewall (`server/src/portfolio/Firewall.java`) that blocks floods, scanners and anything that isn't a plain page visit.
 - Sends the security headers and caching rules with every response.
 
