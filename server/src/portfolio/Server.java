@@ -43,12 +43,14 @@ public final class Server {
     static final Map<String, Integer> PUBLIC_FILES = Map.of(
             "favicon.svg", 60 * 60 * 24,    // 1 day
             "og-image.png", 60 * 60 * 24,   // 1 day
-            "robots.txt", 60 * 60 * 24);    // 1 day
+            "robots.txt", 60 * 60 * 24,     // 1 day
+            "sitemap.xml", 60 * 60 * 24);   // 1 day
 
     static final Map<String, String> CONTENT_TYPES = Map.of(
             "svg", "image/svg+xml",
             "png", "image/png",
             "txt", "text/plain; charset=utf-8",
+            "xml", "application/xml; charset=utf-8",
             "css", "text/css; charset=utf-8",
             "html", "text/html; charset=utf-8");
 

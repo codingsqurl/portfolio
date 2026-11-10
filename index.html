@@ -7,10 +7,16 @@
     <meta charset="UTF-8">
     <!-- This makes the page fit properly on phones. Without it, phones zoom out and everything looks tiny. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- The title is the text shown on the browser tab. -->
-    <title>coding squrl · Developer</title>
-    <!-- A short summary that search engines show under your link. -->
-    <meta name="description" content="coding squrl: a self-taught developer building websites, web apps and terminal tools for real small businesses.">
+    <!-- The title is the text shown on the browser tab, and the blue link in Google's results.
+         Under 60 characters, so Google doesn't cut it off. -->
+    <title>coding squrl · Self-Taught Full-Stack Developer</title>
+    <!-- A short summary that search engines show under your link. Under 160 characters,
+         and it names what employers search for: the role and the main tools. -->
+    <meta name="description" content="coding_squrl is a self-taught full-stack developer building websites, web apps and tools for small businesses in TypeScript, Next.js, Go, Rust and Java.">
+    <meta name="author" content="coding squrl">
+    <!-- The one official address of this page. If it's ever reachable at more than one
+         address, this tells Google which to list, so they don't compete with each other. -->
+    <link rel="canonical" href="https://codingsqurl.fly.dev/">
     <!-- When someone clicks a link off your site, only share your domain, not the full address. -->
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <!-- The little icon on the browser tab. -->
@@ -19,8 +25,9 @@
          in iMessage, Discord, LinkedIn and so on. These must be full web addresses,
          so update them if you move to your own domain. -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="coding squrl · Developer">
-    <meta property="og:description" content="A self-taught developer building websites, web apps and terminal tools for real small businesses.">
+    <meta property="og:title" content="coding squrl · Self-Taught Full-Stack Developer">
+    <meta property="og:description" content="A self-taught full-stack developer building websites, web apps and tools for small businesses in TypeScript, Next.js, Go, Rust and Java.">
+    <meta property="og:site_name" content="coding squrl">
     <meta property="og:url" content="https://codingsqurl.fly.dev/">
     <meta property="og:image" content="https://codingsqurl.fly.dev/og-image.png">
     <meta property="og:image:width" content="1200">
@@ -28,6 +35,40 @@
     <meta property="og:image:alt" content="Hi, I'm coding squrl. Real software for real small businesses, from the terminal to the web.">
     <!-- Tells X (Twitter) to show the big picture version of the preview. -->
     <meta name="twitter:card" content="summary_large_image">
+    <!-- Structured data: tells Google, in a format it reads directly, who I am and where
+         else I am online, so it can connect this site with my GitHub and show me better in
+         search. It's data, not a script: browsers never run it, so the security policy's
+         "no scripts" rule still holds. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://codingsqurl.fly.dev/#me",
+          "name": "coding squrl",
+          "alternateName": ["coding_squrl", "codingsqurl"],
+          "url": "https://codingsqurl.fly.dev/",
+          "image": "https://codingsqurl.fly.dev/og-image.png",
+          "jobTitle": "Full-Stack Developer",
+          "description": "Self-taught full-stack developer building websites, web apps and tools for small businesses.",
+          "knowsAbout": ["TypeScript", "Next.js", "React", "Go", "Rust", "Java", "Python", "C", "C++", "SQLite", "Web security"],
+          "sameAs": [
+            "https://github.com/codingsqurl",
+            "https://buymeacoffee.com/coding_squrl",
+            "https://discord.com/users/557407919063433217"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://codingsqurl.fly.dev/#site",
+          "url": "https://codingsqurl.fly.dev/",
+          "name": "coding squrl",
+          "author": {"@id": "https://codingsqurl.fly.dev/#me"}
+        }
+      ]
+    }
+    </script>
     <!-- This connects our CSS file, which controls how everything looks. -->
     <link rel="stylesheet" href="style.css">
   </head>

@@ -99,6 +99,38 @@ final class ServerTest {
             equal("public, max-age=86400", Client.get("/robots.txt").header("Cache-Control"));
         });
 
+        test("the sitemap is served as XML and lists the home page", () -> {
+            Client.Reply sitemap = Client.get("/sitemap.xml");
+            equal(200, sitemap.status());
+            equal("application/xml; charset=utf-8", sitemap.header("Content-Type"));
+            contains(sitemap.text(), "<loc>https://codingsqurl.fly.dev/</loc>");
+        });
+
+        test("robots.txt allows everything and points to the sitemap", () -> {
+            String robots = Client.get("/robots.txt").text();
+            contains(robots, "Allow: /");
+            contains(robots, "Sitemap: https://codingsqurl.fly.dev/sitemap.xml");
+        });
+
+        test("the page tells search engines its title, summary and official address", () -> {
+            String page = Client.get("/").text();
+            contains(page, "<title>coding squrl · Self-Taught Full-Stack Developer</title>");
+            contains(page, "<meta name=\"description\" content=\"coding_squrl is a self-taught full-stack developer");
+            contains(page, "<link rel=\"canonical\" href=\"https://codingsqurl.fly.dev/\">");
+        });
+
+        test("the structured data for Google is valid JSON and names me", () -> {
+            String page = Client.get("/").text();
+            int start = page.indexOf("<script type=\"application/ld+json\">");
+            isTrue(start >= 0, "structured data present");
+            String json = page.substring(page.indexOf('>', start) + 1, page.indexOf("</script>", start));
+            java.util.Map<?, ?> data = (java.util.Map<?, ?>) Json.parse(json);
+            java.util.Map<?, ?> person = (java.util.Map<?, ?>) ((java.util.List<?>) data.get("@graph")).get(0);
+            equal("Person", person.get("@type"));
+            equal("coding squrl", person.get("name"));
+            contains(person.get("sameAs").toString(), "https://github.com/codingsqurl");
+        });
+
         test("nothing else in the repo can be reached, even by name", () -> {
             for (String path : new String[] {"/README.md", "/index.html", "/404.html", "/Dockerfile",
                     "/fly.toml", "/run.sh", "/CHECKLIST.md", "/server/src/portfolio/Server.java", "/a/b/c"}) {

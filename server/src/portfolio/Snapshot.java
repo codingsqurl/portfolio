@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 
 /**
  * Builds a static copy of the site for GitHub Pages, with fresh data from GitHub.
@@ -15,7 +16,8 @@ import java.nio.file.StandardCopyOption;
  *
  * - Pages can't send headers, so the no-scripts security policy goes in a
  *   meta tag instead. (frame-ancestors only works as a header, so it's left out.)
- * - Link previews point at the Pages address instead of fly.dev.
+ * - Every full address (link previews, the canonical address, the structured data,
+ *   the sitemap and robots.txt) points at the Pages address instead of fly.dev.
  * - The 404 page's links get the /portfolio/ prefix the Pages address has.
  *
  * Unlike the server, it stops with an error if GitHub can't be reached, so it
@@ -26,7 +28,8 @@ import java.nio.file.StandardCopyOption;
 public final class Snapshot {
     private Snapshot() {}
 
-    static final String[] FILES = {"style.css", "favicon.svg", "og-image.png", "robots.txt"};
+    static final String[] FILES = {"style.css", "favicon.svg", "og-image.png"};
+    static final String FLY = "https://codingsqurl.fly.dev/";
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
@@ -49,6 +52,11 @@ public final class Snapshot {
         String notFound = Files.readString(Server.SITE.resolve("404.html"), StandardCharsets.UTF_8);
         Files.writeString(out.resolve("404.html"), notFoundForPages(notFound, base), StandardCharsets.UTF_8);
 
+        String robots = Files.readString(Server.SITE.resolve("robots.txt"), StandardCharsets.UTF_8);
+        Files.writeString(out.resolve("robots.txt"), robots.replace(FLY, base), StandardCharsets.UTF_8);
+        String sitemap = Files.readString(Server.SITE.resolve("sitemap.xml"), StandardCharsets.UTF_8);
+        Files.writeString(out.resolve("sitemap.xml"), sitemapForPages(sitemap, base, LocalDate.now()), StandardCharsets.UTF_8);
+
         for (String name : FILES) {
             Files.copy(Server.SITE.resolve(name), out.resolve(name), StandardCopyOption.REPLACE_EXISTING);
         }
@@ -69,8 +77,12 @@ public final class Snapshot {
     static String forPages(String page, String base) {
         return page
                 .replace("<meta charset=\"UTF-8\">", "<meta charset=\"UTF-8\">\n    " + cspMeta(Server.CSP))
-                .replace("content=\"https://codingsqurl.fly.dev/\"", "content=\"" + base + "\"")
-                .replace("content=\"https://codingsqurl.fly.dev/og-image.png\"", "content=\"" + base + "og-image.png\"");
+                .replace(FLY, base);
+    }
+
+    /** The sitemap, pointing at the Pages address and dated today, since that's when this copy was made. */
+    static String sitemapForPages(String sitemap, String base, LocalDate today) {
+        return sitemap.replace(FLY, base).replaceAll("<lastmod>[^<]*</lastmod>", "<lastmod>" + today + "</lastmod>");
     }
 
     /** The 404 page, adjusted for GitHub Pages: its links need the site's folder, like /portfolio/. */

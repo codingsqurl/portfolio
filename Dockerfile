@@ -17,7 +17,7 @@ WORKDIR /srv
 # Only the compiled server and the public site files go in. Notes like README.md
 # and the checklists never reach the live server, and neither does the source code.
 COPY --from=build /build/classes/ classes/
-COPY index.html 404.html style.css favicon.svg og-image.png robots.txt ./
+COPY index.html 404.html style.css favicon.svg og-image.png robots.txt sitemap.xml ./
 
 # Run as a regular user rather than root, so a bug in the server can't take over the container.
 RUN adduser -S -H web

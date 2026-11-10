@@ -34,6 +34,20 @@ final class SnapshotTest {
             lacks(page, "codingsqurl.fly.dev");
         });
 
+        test("the canonical address and structured data point at the Pages address too", () -> {
+            String page = Snapshot.forPages(Files.readString(Path.of("index.html")), BASE);
+            contains(page, "<link rel=\"canonical\" href=\"" + BASE + "\">");
+            contains(page, "\"url\": \"" + BASE + "\"");
+        });
+
+        test("the sitemap points at the Pages address and is dated the day it's built", () -> {
+            String sitemap = Snapshot.sitemapForPages(Files.readString(Path.of("sitemap.xml")), BASE,
+                    java.time.LocalDate.of(2027, 3, 4));
+            contains(sitemap, "<loc>" + BASE + "</loc>");
+            contains(sitemap, "<lastmod>2027-03-04</lastmod>");
+            lacks(sitemap, "fly.dev");
+        });
+
         test("the 404 page's links include /portfolio/", () -> {
             String page = Snapshot.notFoundForPages(Files.readString(Path.of("404.html")), BASE);
             contains(page, "href=\"/portfolio/favicon.svg\"");

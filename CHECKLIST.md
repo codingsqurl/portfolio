@@ -55,14 +55,30 @@ The server sends these with every response. They're listed in `SECURITY_HEADERS`
 - [x] Favicon (`favicon.ico` or an SVG icon) linked in `<head>`
 - [x] Open Graph tags (`og:title`, `og:description`, `og:image`) so links look good when shared
 - [x] A `404.html` page
-- [x] `robots.txt`, plus a `sitemap.xml` if you add more pages
+- [x] `robots.txt` and a `sitemap.xml`
 - [x] Add `rel="noopener"` to any link that opens in a new tab (`target="_blank"`)
 - [ ] A real way to contact you. A `mailto:` link is the simplest and needs no server. If you add a contact form later, use a form service with spam protection rather than building your own backend
 - [ ] Test on your phone, plus at least Safari and Chrome
 - [ ] Run Lighthouse in Chrome DevTools and fix anything flagged under accessibility or performance
 - [ ] Compress images and set `width` and `height` on them
 
-## 8. After launch
+## 8. Getting found on Google
+Done in the code:
+- [x] A title and description that name the role and main tools employers search for
+- [x] A canonical address, so Google knows which copy of the site is the official one
+- [x] Structured data (schema.org Person) linking the site to my GitHub and other profiles
+- [x] `sitemap.xml`, listed in `robots.txt`
+- [x] Link previews (Open Graph) with a title, description and image
+- [x] Fast, readable on phones, no broken links, and the 404 page is hidden from search
+
+Yours to do (Google needs your own account for these):
+- [ ] Add the site in Google Search Console (search.google.com/search-console): choose "URL prefix", enter the live address, pick the "HTML tag" check, and send Claude the `google-site-verification` code to add to the page
+- [ ] Once it's verified, submit the sitemap there (`sitemap.xml`) and use "Request indexing" on the home page. Google usually lists a new site within a few days to a couple of weeks
+- [ ] Do the same in Bing Webmaster Tools (bing.com/webmasters). It can import straight from Google Search Console, and it covers DuckDuckGo and Yahoo too
+- [ ] Link the site everywhere you have a profile: GitHub (Settings → Profile → URL), LinkedIn, Discord. Every link to it helps Google trust it
+- [ ] When you move to Fly.io or your own domain, add the new address in Search Console too. The canonical tag and sitemap update themselves
+
+## 9. After launch
 - [ ] Set up a free uptime check, such as UptimeRobot, that emails you if the site goes down
 - [ ] Turn on GitHub Dependabot alerts (repo → Settings → Advanced Security). They only send alerts, and no code runs. The server has no libraries, so they matter less now, but they also cover the Docker base image
 - [ ] Look over your GitHub, registrar and host accounts every few months: active sessions, connected apps and access tokens
