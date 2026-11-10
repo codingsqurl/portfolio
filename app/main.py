@@ -10,8 +10,10 @@ Run it locally with:
 then open http://127.0.0.1:8000
 """
 
+import base64
 import hashlib
 import logging
+import re
 import threading
 import time
 from pathlib import Path
@@ -36,6 +38,8 @@ PUBLIC_FILES = {
     "og-image.png": 60 * 60 * 24,     # 1 day
     "robots.txt": 60 * 60 * 24,       # 1 day
 }
+# Files other sites are allowed to show, like the preview image in a shared link.
+SHAREABLE_FILES = {"og-image.png"}
 
 # How often to ask GitHub for the latest repos, and how soon to try again if it fails.
 PROJECTS_REFRESH = 60 * 60   # 1 hour
@@ -45,19 +49,53 @@ PROJECTS_RETRY = 60 * 5      # 5 minutes
 # and never let another site show this one inside a frame.
 CSP = (
     "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; "
-    "object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    "object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; "
+    "upgrade-insecure-requests"
 )
-# The 404 page keeps its styles inside itself, so it also needs inline styles allowed.
-CSP_404 = CSP.replace("style-src 'self'", "style-src 'self' 'unsafe-inline'")
+
+
+def inline_style_hash(path):
+    """The SHA-256 fingerprint of the page's <style> block, in the form CSP wants.
+
+    The browser hashes the exact text between <style> and </style> and only applies
+    it if the hash matches. So the 404 page's own styles work, but any style an
+    attacker manages to inject does not. It's recomputed at startup, so editing
+    404.html never needs a matching edit here."""
+    match = re.search(r"<style>(.*?)</style>", path.read_text(encoding="utf-8"), re.S)
+    if match is None:
+        return ""
+    digest = hashlib.sha256(match.group(1).encode("utf-8")).digest()
+    return "'sha256-" + base64.b64encode(digest).decode() + "'"
+
+
+# The 404 page keeps its styles inside itself. Its CSP allows that one exact block
+# by hash, instead of 'unsafe-inline', which would allow any inline style at all.
+CSP_404 = CSP.replace("style-src 'self'", f"style-src 'self' {inline_style_hash(SITE / '404.html')}")
 
 SECURITY_HEADERS = {
     "Content-Security-Policy": CSP,
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "strict-origin-when-cross-origin",
-    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
     "Cross-Origin-Opener-Policy": "same-origin",
-    "Strict-Transport-Security": "max-age=31536000",
+    # Other sites can't load this site's files into their pages. og-image.png opts
+    # out below, so link previews on social sites still show it.
+    "Cross-Origin-Resource-Policy": "same-origin",
+    # Older browsers ignore CSP's frame-ancestors, so say "no framing" the old way too.
+    "X-Frame-Options": "DENY",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
 }
+
+# The site never sets cookies today. If one is ever added, these rules get forced onto
+# it: never sent over plain http (Secure), invisible to page scripts (HttpOnly), and
+# never sent along with requests that start on another site (SameSite=Strict).
+COOKIE_RULES = {"secure": "Secure", "httponly": "HttpOnly", "samesite": "SameSite=Strict"}
+
+
+def harden_cookie(cookie):
+    present = {part.strip().split("=")[0].lower() for part in cookie.split(";")[1:]}
+    missing = [rule for name, rule in COOKIE_RULES.items() if name not in present]
+    return "; ".join([cookie, *missing]) if missing else cookie
 
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
@@ -70,6 +108,12 @@ async def add_security_headers(request: Request, call_next):
     response = await call_next(request)
     for name, value in SECURITY_HEADERS.items():
         response.headers.setdefault(name, value)
+
+    cookies = response.headers.getlist("set-cookie")
+    if cookies:
+        del response.headers["set-cookie"]
+        for cookie in cookies:
+            response.headers.append("set-cookie", harden_cookie(cookie))
     return response
 
 
@@ -149,7 +193,10 @@ def healthz():
 def public_file(name: str):
     if name not in PUBLIC_FILES:
         raise StarletteHTTPException(status_code=404)
-    return FileResponse(SITE / name, headers={"Cache-Control": f"public, max-age={PUBLIC_FILES[name]}"})
+    headers = {"Cache-Control": f"public, max-age={PUBLIC_FILES[name]}"}
+    if name in SHAREABLE_FILES:
+        headers["Cross-Origin-Resource-Policy"] = "cross-origin"
+    return FileResponse(SITE / name, headers=headers)
 
 
 @app.exception_handler(StarletteHTTPException)
