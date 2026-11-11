@@ -701,6 +701,15 @@ a:hover {
   background-color: #4752c4;
 }
 
+.button-linkedin {
+  background-color: #0a66c2;
+  color: #ffffff;
+}
+
+.button-linkedin:hover {
+  background-color: #004182;
+}
+
 /* Which Discord button shows (see the comment by the buttons in index.html).
    Phones and tablets, and anything unsure: the web link, which opens the app if it's installed. */
 .discord-app,
