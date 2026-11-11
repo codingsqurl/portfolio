@@ -38,11 +38,11 @@
   --accent: #2997ff;
   --accent-hover: #4da9ff;
 
-  /* The colours of the lights: one cool family of blue, violet, cyan and indigo. */
-  --light-blue: #2997ff;
-  --light-violet: #bf5af2;
-  --light-cyan: #64d2ff;
-  --light-indigo: #5e5ce6;
+  /* The rasta colours the lights use: the headline, the glowing card borders and the
+     skill chips. Change them here and they all change together. */
+  --rasta-green: #1fb954;
+  --rasta-gold: #fcd116;
+  --rasta-red: #e8333c;
 
   /* The widest the content is allowed to get. */
   --content-width: 980px;
@@ -235,7 +235,7 @@ a:hover {
 }
 
 .hero .link-arrow {
-  color: var(--light-blue);
+  color: var(--accent);
 }
 
 
@@ -584,7 +584,7 @@ a:hover {
 }
 
 .contrib-scroll:focus-visible {
-  outline: 2px solid var(--light-blue);
+  outline: 2px solid var(--accent);
   outline-offset: 4px;
 }
 
@@ -759,9 +759,6 @@ a:hover {
    colours flow through the name. The loop repeats the first colour at the end
    so there's no jump when it starts again. */
 .hero h1 {
-  --rasta-green: #1fb954;
-  --rasta-gold: #fcd116;
-  --rasta-red: #e8333c;
   background: linear-gradient(90deg,
     var(--rasta-green), var(--rasta-gold), var(--rasta-red),
     var(--rasta-gold), var(--rasta-green)) 0 0 / 200% 100%;
@@ -794,8 +791,8 @@ a:hover {
   z-index: -1;
   border-radius: inherit;
   background: conic-gradient(from var(--spin),
-    var(--light-blue), var(--light-violet), var(--light-indigo),
-    var(--light-cyan), var(--light-blue));
+    var(--rasta-green), var(--rasta-gold), var(--rasta-red),
+    var(--rasta-gold), var(--rasta-green));
   opacity: 0;
   /* Paused until hover, so hidden cards don't keep the device busy. */
   animation: spin 6s linear infinite paused;
@@ -818,7 +815,7 @@ a:hover {
 
 @media (hover: hover) {
   .card:hover {
-    box-shadow: 0 0 40px rgba(41, 151, 255, 0.15);
+    box-shadow: 0 0 40px rgba(252, 209, 22, 0.15);
   }
 
   .card:hover::before {
@@ -848,13 +845,12 @@ a:hover {
 
 /* ----- Skill chips: a wave of light runs along them, one after another ----- */
 .chips li {
-  --bulb: var(--light-blue);
+  --bulb: var(--rasta-green);
   animation: chip-light 3.4s ease-in-out infinite;
 }
 
-.chips li:nth-child(4n + 2) { --bulb: var(--light-violet); }
-.chips li:nth-child(4n + 3) { --bulb: var(--light-cyan); }
-.chips li:nth-child(4n + 4) { --bulb: var(--light-indigo); }
+.chips li:nth-child(3n + 2) { --bulb: var(--rasta-gold); }
+.chips li:nth-child(3n + 3) { --bulb: var(--rasta-red); }
 
 /* Each chip waits 0.2s longer than the one before, so the light runs along the row. */
 .chips li:nth-child(1)  { animation-delay: 0s; }
