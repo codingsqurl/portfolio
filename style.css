@@ -682,6 +682,23 @@ a:hover {
   font-weight: 600;
 }
 
+/* The logo buttons: round, with the service's logo in the middle in white (black on
+   the yellow coffee button). The logo takes its colour from the text colour. */
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.icon-button svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
 /* Each button uses its service's colour so people recognise it. */
 .button-coffee {
   background-color: #ffdd00;
@@ -735,7 +752,7 @@ a:hover {
   }
 
   .discord-app {
-    display: inline-block;
+    display: inline-grid;
   }
 
   .discord-fallback {

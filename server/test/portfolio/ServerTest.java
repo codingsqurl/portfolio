@@ -3,6 +3,7 @@ package portfolio;
 import static portfolio.Check.contains;
 import static portfolio.Check.equal;
 import static portfolio.Check.isTrue;
+import static portfolio.Check.lacks;
 import static portfolio.Check.section;
 import static portfolio.Check.test;
 
@@ -29,19 +30,30 @@ final class ServerTest {
         test("the Discord button opens the app on computers, with a web link for phones and as a fallback", () -> {
             String page = Client.get("/").text();
             contains(page, "href=\"discord://-/users/557407919063433217\"");
-            contains(page, "class=\"button button-discord discord-web\" href=\"https://discord.com/users/557407919063433217\"");
+            contains(page, "class=\"button icon-button button-discord discord-web\" href=\"https://discord.com/users/557407919063433217\"");
             contains(page, "No Discord app? <a href=\"https://discord.com/users/557407919063433217\">");
         });
 
         test("the footer links to my LinkedIn, and Google is told it's mine", () -> {
             String page = Client.get("/").text();
-            contains(page, "class=\"button button-linkedin\" href=\"https://www.linkedin.com/in/coding-squrl-undefined-27789244a/\">Connect on LinkedIn</a>");
+            contains(page, "class=\"button icon-button button-linkedin\" href=\"https://www.linkedin.com/in/coding-squrl-undefined-27789244a/\" aria-label=\"Connect on LinkedIn\"");
             contains(page, "\"https://www.linkedin.com/in/coding-squrl-undefined-27789244a/\",");
+        });
+
+        test("every footer button is a logo with a name for screen readers", () -> {
+            String page = Client.get("/").text();
+            int start = page.indexOf("<div class=\"footer-actions\">");
+            String footer = page.substring(start, page.indexOf("</div>", start));
+            for (String name : new String[] {"Connect on LinkedIn", "Connect on GitHub", "Connect on Discord", "Buy me a coffee"}) {
+                contains(footer, "aria-label=\"" + name + "\"");
+            }
+            isTrue(footer.split("<svg ", -1).length - 1 == 5, "five logos (two for Discord)");
+            lacks(footer, "<script");
         });
 
         test("the footer links to my GitHub", () -> {
             contains(Client.get("/").text(),
-                    "class=\"button button-github\" href=\"https://github.com/codingsqurl\">Connect on GitHub</a>");
+                    "class=\"button icon-button button-github\" href=\"https://github.com/codingsqurl\" aria-label=\"Connect on GitHub\"");
         });
 
         test("every page carries the security headers", () -> {
