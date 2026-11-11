@@ -33,6 +33,12 @@ final class ServerTest {
             contains(page, "No Discord app? <a href=\"https://discord.com/users/557407919063433217\">");
         });
 
+        test("the footer links to my LinkedIn, and Google is told it's mine", () -> {
+            String page = Client.get("/").text();
+            contains(page, "class=\"button button-linkedin\" href=\"https://www.linkedin.com/in/coding-squrl-undefined-27789244a/\">Connect on LinkedIn</a>");
+            contains(page, "\"https://www.linkedin.com/in/coding-squrl-undefined-27789244a/\",");
+        });
+
         test("every page carries the security headers", () -> {
             for (String path : new String[] {"/", "/style.css", "/favicon.svg", "/nope"}) {
                 Client.Reply reply = Client.get(path);
