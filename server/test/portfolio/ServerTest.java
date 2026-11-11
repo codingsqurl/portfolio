@@ -39,6 +39,11 @@ final class ServerTest {
             contains(page, "\"https://www.linkedin.com/in/coding-squrl-undefined-27789244a/\",");
         });
 
+        test("the footer links to my GitHub", () -> {
+            contains(Client.get("/").text(),
+                    "class=\"button button-github\" href=\"https://github.com/codingsqurl\">Connect on GitHub</a>");
+        });
+
         test("every page carries the security headers", () -> {
             for (String path : new String[] {"/", "/style.css", "/favicon.svg", "/nope"}) {
                 Client.Reply reply = Client.get(path);
