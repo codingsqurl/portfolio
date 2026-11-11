@@ -44,7 +44,7 @@ public final class Snapshot {
         var calendar = Contributions.fetchCalendar();
 
         String page = Files.readString(Server.SITE.resolve("index.html"), StandardCharsets.UTF_8);
-        page = page.replace("href=\"style.css\"", "href=\"style.css?v=" + Server.STYLE_VERSION + "\"");
+        page = page.replace("href=\"style.css\"", "href=\"style.css?v=" + Server.styleVersion() + "\"");
         page = Projects.insertCards(page, repos);
         page = Contributions.insertGraph(page, calendar);
         Files.writeString(out.resolve("index.html"), forPages(page, base), StandardCharsets.UTF_8);

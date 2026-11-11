@@ -86,7 +86,7 @@ final class ServerTest {
 
         test("the fingerprinted stylesheet is kept for a year, a plain one for 10 minutes", () -> {
             equal("public, max-age=31536000, immutable",
-                    Client.get("/style.css?v=" + Server.STYLE_VERSION).header("Cache-Control"));
+                    Client.get("/style.css?v=" + Server.styleVersion()).header("Cache-Control"));
             equal("public, max-age=600", Client.get("/style.css").header("Cache-Control"));
             equal("public, max-age=600", Client.get("/style.css?v=old").header("Cache-Control"));
             equal("text/css; charset=utf-8", Client.get("/style.css").header("Content-Type"));

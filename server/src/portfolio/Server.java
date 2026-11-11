@@ -82,7 +82,11 @@ public final class Server {
     // Its address includes a fingerprint of its contents (style.css?v=1a2b3c4d), so
     // browsers can keep it for a year. When the file changes, so does the address.
     static final Path STYLE_CSS = SITE.resolve("style.css");
-    static final String STYLE_VERSION = sha256(read(STYLE_CSS)).substring(0, 8);
+    // The fingerprint is worked out from the file as it is now, not once at startup, so
+    // editing style.css while the server runs can't pair a new page with a stale stylesheet.
+    static String styleVersion() {
+        return sha256(read(STYLE_CSS)).substring(0, 8);
+    }
 
     // With -Dportfolio.offline=true the server never calls GitHub and shows the cards and
     // graph saved in index.html. The tests use it so they don't depend on the internet.
@@ -155,7 +159,7 @@ public final class Server {
             return home(exchange);
         }
         if (path.equals("/style.css")) {
-            String cache = STYLE_VERSION.equals(queryValue(exchange, "v"))
+            String cache = styleVersion().equals(queryValue(exchange, "v"))
                     ? "public, max-age=31536000, immutable"
                     : "public, max-age=600";
             send(exchange, 200, read(STYLE_CSS), CONTENT_TYPES.get("css"), Map.of("Cache-Control", cache));
@@ -195,7 +199,7 @@ public final class Server {
 
         private void rebuild() {
             String page = new String(read(SITE.resolve("index.html")), StandardCharsets.UTF_8);
-            page = page.replace("href=\"style.css\"", "href=\"style.css?v=" + STYLE_VERSION + "\"");
+            page = page.replace("href=\"style.css\"", "href=\"style.css?v=" + styleVersion() + "\"");
 
             if (OFFLINE) {
                 html = page;
