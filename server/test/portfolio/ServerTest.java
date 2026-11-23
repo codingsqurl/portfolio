@@ -1,0 +1,214 @@
+package portfolio;
+
+import static portfolio.Check.contains;
+import static portfolio.Check.equal;
+import static portfolio.Check.isTrue;
+import static portfolio.Check.lacks;
+import static portfolio.Check.section;
+import static portfolio.Check.test;
+
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
+
+/** The server: which addresses give which pages, and the headers that come with them. */
+final class ServerTest {
+    private ServerTest() {}
+
+    static void run() {
+        section("Server");
+
+        test("the home page loads, with the stylesheet's fingerprint filled in", () -> {
+            Client.Reply home = Client.get("/");
+            equal(200, home.status());
+            equal("text/html; charset=utf-8", home.header("Content-Type"));
+            contains(home.text(), "Hi, I'm coding_squrl.");
+            isTrue(home.text().matches("(?s).*href=\"style\\.css\\?v=[0-9a-f]{8}\".*"), "style.css?v=<8 hex>");
+        });
+
+        test("the Discord button opens the app on computers, with a web link for phones and as a fallback", () -> {
+            String page = Client.get("/").text();
+            contains(page, "href=\"discord://-/users/557407919063433217\"");
+            contains(page, "class=\"button icon-button button-discord discord-web\" href=\"https://discord.com/users/557407919063433217\"");
+            contains(page, "No Discord app? <a href=\"https://discord.com/users/557407919063433217\">");
+        });
+
+        test("the footer links to my LinkedIn, and Google is told it's mine", () -> {
+            String page = Client.get("/").text();
+            contains(page, "class=\"button icon-button button-linkedin\" href=\"https://www.linkedin.com/in/coding-squrl-undefined-27789244a/\" aria-label=\"Connect on LinkedIn\"");
+            contains(page, "\"https://www.linkedin.com/in/coding-squrl-undefined-27789244a/\",");
+        });
+
+        test("every footer button is a logo with a name for screen readers", () -> {
+            String page = Client.get("/").text();
+            int start = page.indexOf("<div class=\"footer-actions\">");
+            String footer = page.substring(start, page.indexOf("</div>", start));
+            for (String name : new String[] {"Connect on LinkedIn", "Connect on GitHub", "Connect on Discord", "Buy me a coffee"}) {
+                contains(footer, "aria-label=\"" + name + "\"");
+            }
+            isTrue(footer.split("<svg ", -1).length - 1 == 5, "five logos (two for Discord)");
+            lacks(footer, "<script");
+        });
+
+        test("the footer links to my GitHub", () -> {
+            contains(Client.get("/").text(),
+                    "class=\"button icon-button button-github\" href=\"https://github.com/codingsqurl\" aria-label=\"Connect on GitHub\"");
+        });
+
+        test("the server sets request and response timeouts, so a slow bot can't tie it up", () -> {
+            // The test server is already running, so start() has called harden().
+            equal("20", System.getProperty("sun.net.httpserver.maxReqTime"));
+            equal("30", System.getProperty("sun.net.httpserver.maxRspTime"));
+            equal("50", System.getProperty("sun.net.httpserver.maxReqHeaders"));
+            equal("16384", System.getProperty("sun.net.httpserver.maxReqHeaderSize"));
+        });
+
+        test("other sites can't embed this site's files", () -> {
+            equal("same-origin", Client.get("/").header("Cross-Origin-Resource-Policy"));
+        });
+
+        test("every page carries the security headers", () -> {
+            for (String path : new String[] {"/", "/style.css", "/favicon.svg", "/nope"}) {
+                Client.Reply reply = Client.get(path);
+                for (Map.Entry<String, String> header : Server.SECURITY_HEADERS.entrySet()) {
+                    if (path.equals("/nope") && header.getKey().equals("Content-Security-Policy")) {
+                        continue; // checked separately: the 404 page has its own
+                    }
+                    equal(header.getValue(), reply.header(header.getKey()));
+                }
+            }
+        });
+
+        test("responses don't say what server software runs the site", () -> {
+            equal(null, Client.get("/").header("Server"));
+        });
+
+        test("the home page is checked for changes on every visit", () -> {
+            equal("no-cache", Client.get("/").header("Cache-Control"));
+        });
+
+        test("a repeat visit with an unchanged page gets 304 and no body", () -> {
+            String etag = Client.get("/").header("ETag");
+            Client.Reply again = Client.get("/", "If-None-Match: " + etag);
+            equal(304, again.status());
+            equal(0, again.body().length);
+        });
+
+        test("a different ETag gets the full page", () -> {
+            equal(200, Client.get("/", "If-None-Match: \"stale\"").status());
+        });
+
+        test("HEAD gets the headers and length but no body", () -> {
+            Client.Reply head = Client.send("HEAD", "/", Client.freshIp());
+            equal(200, head.status());
+            isTrue(Integer.parseInt(head.header("Content-Length")) > 1000, "a real length");
+            equal(0, head.body().length);
+        });
+
+        test("text is squashed with gzip when the browser accepts it", () -> {
+            Client.Reply plain = Client.get("/");
+            Client.Reply zipped = Client.get("/", "Accept-Encoding: gzip, br");
+            equal("gzip", zipped.header("Content-Encoding"));
+            isTrue(zipped.body().length < plain.body().length / 2, "much smaller");
+            byte[] unzipped = new GZIPInputStream(new ByteArrayInputStream(zipped.body())).readAllBytes();
+            equal(plain.text(), new String(unzipped, StandardCharsets.UTF_8));
+        });
+
+        test("images aren't gzipped, since they're already compressed", () -> {
+            equal(null, Client.get("/og-image.png", "Accept-Encoding: gzip").header("Content-Encoding"));
+        });
+
+        test("the fingerprinted stylesheet is kept for a year, a plain one for 10 minutes", () -> {
+            equal("public, max-age=31536000, immutable",
+                    Client.get("/style.css?v=" + Server.styleVersion()).header("Cache-Control"));
+            equal("public, max-age=600", Client.get("/style.css").header("Cache-Control"));
+            equal("public, max-age=600", Client.get("/style.css?v=old").header("Cache-Control"));
+            equal("text/css; charset=utf-8", Client.get("/style.css").header("Content-Type"));
+        });
+
+        test("the public files load with the right types", () -> {
+            equal("image/svg+xml", Client.get("/favicon.svg").header("Content-Type"));
+            equal("image/png", Client.get("/og-image.png").header("Content-Type"));
+            equal("text/plain; charset=utf-8", Client.get("/robots.txt").header("Content-Type"));
+            equal("public, max-age=86400", Client.get("/robots.txt").header("Cache-Control"));
+        });
+
+        test("the sitemap is served as XML and lists the home page and the terminal page", () -> {
+            Client.Reply sitemap = Client.get("/sitemap.xml");
+            equal(200, sitemap.status());
+            equal("application/xml; charset=utf-8", sitemap.header("Content-Type"));
+            contains(sitemap.text(), "<loc>https://codingsqurl.fly.dev/</loc>");
+            contains(sitemap.text(), "<loc>https://codingsqurl.fly.dev/terminal</loc>");
+        });
+
+        test("the terminal page loads with the fingerprinted stylesheet and the security headers", () -> {
+            Client.Reply terminal = Client.get("/terminal");
+            equal(200, terminal.status());
+            equal("text/html; charset=utf-8", terminal.header("Content-Type"));
+            equal("no-cache", terminal.header("Cache-Control"));
+            equal(Server.CSP, terminal.header("Content-Security-Policy"));
+            contains(terminal.text(), "I basically live in the terminal.");
+            contains(terminal.text(), "there's no place like 127.0.0.1");
+            isTrue(terminal.text().matches("(?s).*href=\"style\\.css\\?v=[0-9a-f]{8}\".*"), "style.css?v=<8 hex>");
+            lacks(terminal.text(), "<script");
+        });
+
+        test("the home page's nav links to the terminal page", () -> {
+            contains(Client.get("/").text(), "<a href=\"terminal\">Terminal</a>");
+        });
+
+        test("robots.txt allows everything and points to the sitemap", () -> {
+            String robots = Client.get("/robots.txt").text();
+            contains(robots, "Allow: /");
+            contains(robots, "Sitemap: https://codingsqurl.fly.dev/sitemap.xml");
+        });
+
+        test("the page tells search engines its title, summary and official address", () -> {
+            String page = Client.get("/").text();
+            contains(page, "<title>coding squrl · Self-Taught Full-Stack Developer</title>");
+            contains(page, "<meta name=\"description\" content=\"coding_squrl is a self-taught full-stack developer");
+            contains(page, "<link rel=\"canonical\" href=\"https://codingsqurl.fly.dev/\">");
+        });
+
+        test("the structured data for Google is valid JSON and names me", () -> {
+            String page = Client.get("/").text();
+            int start = page.indexOf("<script type=\"application/ld+json\">");
+            isTrue(start >= 0, "structured data present");
+            String json = page.substring(page.indexOf('>', start) + 1, page.indexOf("</script>", start));
+            java.util.Map<?, ?> data = (java.util.Map<?, ?>) Json.parse(json);
+            java.util.Map<?, ?> person = (java.util.Map<?, ?>) ((java.util.List<?>) data.get("@graph")).get(0);
+            equal("Person", person.get("@type"));
+            equal("coding squrl", person.get("name"));
+            contains(person.get("sameAs").toString(), "https://github.com/codingsqurl");
+        });
+
+        test("nothing else in the repo can be reached, even by name", () -> {
+            for (String path : new String[] {"/README.md", "/index.html", "/404.html", "/terminal.html", "/Dockerfile",
+                    "/fly.toml", "/run.sh", "/CHECKLIST.md", "/server/src/portfolio/Server.java", "/a/b/c"}) {
+                equal(404, Client.get(path).status());
+            }
+        });
+
+        test("missing pages get the 404 page, with inline styles allowed for it alone", () -> {
+            Client.Reply missing = Client.get("/nope");
+            equal(404, missing.status());
+            contains(missing.text(), "<title>Page not found");
+            equal(Server.CSP_404, missing.header("Content-Security-Policy"));
+            contains(Server.CSP_404, "style-src 'self' 'unsafe-inline'");
+        });
+
+        test("the health check answers ok, whatever site name Fly asks for", () -> {
+            Client.Reply health = Client.send("GET", "/healthz", null, "Host: 10.0.0.5:8080");
+            equal(200, health.status());
+            equal("ok", health.text());
+            equal("no-store", health.header("Cache-Control"));
+        });
+
+        test("the health check still only allows reading", () -> {
+            Client.Reply post = Client.send("POST", "/healthz", null, "Content-Length: 0");
+            equal(405, post.status());
+            equal("GET, HEAD", post.header("Allow"));
+        });
+    }
+}

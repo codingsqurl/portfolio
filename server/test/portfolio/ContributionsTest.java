@@ -1,0 +1,233 @@
+package portfolio;
+
+import static portfolio.Check.contains;
+import static portfolio.Check.equal;
+import static portfolio.Check.fails;
+import static portfolio.Check.isTrue;
+import static portfolio.Check.lacks;
+import static portfolio.Check.section;
+import static portfolio.Check.test;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.List;
+
+/** The contribution graph: reading GitHub's page and drawing the squares. */
+final class ContributionsTest {
+    private ContributionsTest() {}
+
+    /** A cut-down copy of GitHub's contribution page: three days, out of order, plus their tooltips. */
+    static final String PAGE = """
+            <h2 id="js-contribution-activity-description" class="f4 text-normal mb-2">
+              1,234
+              contributions
+                in the last year
+            </h2>
+            <td tabindex="0" data-ix="1" style="width: 11px" data-date="2026-11-03" id="day-b" data-level="2" class="ContributionCalendar-day"></td>
+            <td tabindex="0" data-ix="0" style="width: 11px" data-date="2026-11-01" id="day-a" data-level="0" class="ContributionCalendar-day"></td>
+            <td tabindex="0" data-ix="2" style="width: 11px" data-date="2026-11-04" id="day-c" class="ContributionCalendar-day"></td>
+            <tool-tip for="day-a" class="sr-only">No contributions on November 1st.</tool-tip>
+            <tool-tip for="day-b" class="sr-only"> 7 contributions on November 3rd. </tool-tip>
+            """;
+
+    static Contributions.Calendar calendar(int count, LocalDate first, int days) {
+        List<Contributions.Day> list = new java.util.ArrayList<>();
+        for (int i = 0; i < days; i++) {
+            list.add(new Contributions.Day(first.plusDays(i), i % 5, "day " + i));
+        }
+        return new Contributions.Calendar(count, "2026", list);
+    }
+
+    static void run() {
+        section("Contributions");
+
+        test("reads the total, commas and all", () -> {
+            equal(1234, Contributions.parseCalendar(PAGE).count());
+        });
+
+        test("reads which stretch of time the total covers", () -> {
+            equal("the last year", Contributions.parseCalendar(PAGE).period());
+            String yearPage = PAGE.replace("in the last year", "in 2026");
+            equal("2026", Contributions.parseCalendar(yearPage).period());
+            equal(1234, Contributions.parseCalendar(yearPage).count());
+        });
+
+        test("reads each day's date and shade, sorted by date", () -> {
+            List<Contributions.Day> days = Contributions.parseCalendar(PAGE).days();
+            equal(3, days.size());
+            equal(LocalDate.of(2026, 11, 1), days.get(0).date());
+            equal(0, days.get(0).level());
+            equal(LocalDate.of(2026, 11, 3), days.get(1).date());
+            equal(2, days.get(1).level());
+        });
+
+        test("matches each day to its tooltip, trimmed", () -> {
+            equal("7 contributions on November 3rd.", Contributions.parseCalendar(PAGE).days().get(1).label());
+        });
+
+        test("a day with no shade or tooltip counts as empty", () -> {
+            Contributions.Day last = Contributions.parseCalendar(PAGE).days().get(2);
+            equal(0, last.level());
+            equal("", last.label());
+        });
+
+        test("a page with no days is an error, so the saved graph is kept", () -> {
+            fails(() -> Contributions.parseCalendar("<html>GitHub changed its page</html>"));
+        });
+
+        test("the first week starts on Sunday: a Wednesday sits in the fourth row", () -> {
+            // 2026-11-04 is a Wednesday, so it's row 3 counting from 0.
+            String svg = Contributions.graph(calendar(5, LocalDate.of(2026, 11, 4), 1));
+            int y = Contributions.TOP + 3 * Contributions.STEP;
+            contains(svg, "x=\"" + Contributions.LEFT + "\" y=\"" + y + "\"");
+        });
+
+        test("one square per day, with its shade as a class", () -> {
+            String svg = Contributions.graph(calendar(5, LocalDate.of(2026, 1, 4), 10));
+            equal(10, svg.split("<rect ", -1).length - 1);
+            contains(svg, "class=\"contrib-l4\"");
+        });
+
+        test("a year of days makes 53 weeks of columns", () -> {
+            // 2025-11-09 is a Sunday; 365 days from there fill 53 columns.
+            String svg = Contributions.graph(calendar(5, LocalDate.of(2025, 11, 9), 365));
+            int width = Contributions.LEFT + 53 * Contributions.STEP - Contributions.GAP;
+            contains(svg, "viewBox=\"0 0 " + width + " ");
+        });
+
+        test("labels the months and the Mon, Wed and Fri rows", () -> {
+            String svg = Contributions.graph(calendar(5, LocalDate.of(2026, 1, 4), 70));
+            contains(svg, ">Feb</text>");
+            contains(svg, ">Mar</text>");
+            contains(svg, ">Mon</text>");
+            contains(svg, ">Wed</text>");
+            contains(svg, ">Fri</text>");
+        });
+
+        test("writes the total with commas and the year, and says contribution for one", () -> {
+            contains(Contributions.graph(calendar(1234, LocalDate.of(2026, 1, 4), 7)), "1,234 contributions in 2026");
+            contains(Contributions.graph(calendar(1, LocalDate.of(2026, 1, 4), 7)), "1 contribution in 2026");
+        });
+
+        test("a whole calendar year: Jan 1st to Dec 31st, labelled from Jan to Dec", () -> {
+            // 2026 starts on a Thursday, so January 1st sits in the fifth row of the first column.
+            String svg = Contributions.graph(calendar(5, LocalDate.of(2026, 1, 1), 365));
+            contains(svg, "x=\"" + Contributions.LEFT + "\" y=\"" + (Contributions.TOP + 4 * Contributions.STEP) + "\"");
+            contains(svg, "<text x=\"" + Contributions.LEFT + "\" y=\"10\">Jan</text>");
+            contains(svg, ">Dec</text>");
+            equal(365, svg.split("<rect ", -1).length - 1);
+        });
+
+        test("tooltips are escaped", () -> {
+            List<Contributions.Day> days = List.of(new Contributions.Day(LocalDate.of(2026, 1, 4), 1, "<b>bold</b>"));
+            String svg = Contributions.graph(new Contributions.Calendar(1, "2026", days));
+            lacks(svg, "<b>");
+            contains(svg, "<title>&lt;b&gt;bold&lt;/b&gt;</title>");
+        });
+
+        test("reads each day's count from its tooltip", () -> {
+            equal(7, Contributions.count(new Contributions.Day(LocalDate.of(2026, 11, 3), 2, "7 contributions on November 3rd.")));
+            equal(1, Contributions.count(new Contributions.Day(LocalDate.of(2026, 11, 3), 1, "1 contribution on November 3rd.")));
+            equal(0, Contributions.count(new Contributions.Day(LocalDate.of(2026, 11, 3), 0, "No contributions on November 3rd.")));
+            equal(0, Contributions.count(new Contributions.Day(LocalDate.of(2026, 11, 3), 0, "")));
+        });
+
+        test("the activity graph shows the last 31 days up to today, not days still to come", () -> {
+            List<Contributions.Day> days = new java.util.ArrayList<>();
+            LocalDate first = LocalDate.of(2026, 1, 1);
+            for (int i = 0; i < 365; i++) {
+                LocalDate date = first.plusDays(i);
+                days.add(new Contributions.Day(date, 1, "2 contributions on " + date + "."));
+            }
+            String svg = Contributions.activity(days, LocalDate.of(2026, 11, 22));
+            equal(31, svg.split("<circle ", -1).length - 1);
+            contains(svg, "62 contributions in the last 31 days");
+            contains(svg, ">Nov 22</text>");
+            lacks(svg, "2026-11-23");
+            lacks(svg, "<rect ");
+        });
+
+        test("the activity graph is left out with less than two days to draw", () -> {
+            List<Contributions.Day> days = List.of(new Contributions.Day(LocalDate.of(2026, 1, 1), 0, ""));
+            equal("", Contributions.activity(days, LocalDate.of(2026, 1, 1)));
+        });
+
+        test("the graph is wrapped so it can scroll sideways on phones", () -> {
+            String page = Contributions.START + "old" + Contributions.END;
+            String result = Contributions.insertGraph(page, calendar(5, LocalDate.of(2026, 1, 4), 7));
+            lacks(result, "old");
+            contains(result, "class=\"contrib-scroll\" tabindex=\"0\"");
+        });
+
+        test("reads GitHub's API reply, private work included, with GitHub-style tooltips", () -> {
+            String json = """
+                    {"data": {"user": {"contributionsCollection": {"contributionCalendar": {
+                      "totalContributions": 299,
+                      "weeks": [
+                        {"contributionDays": [
+                          {"date": "2026-01-02", "contributionCount": 7, "contributionLevel": "THIRD_QUARTILE"},
+                          {"date": "2026-01-01", "contributionCount": 0, "contributionLevel": "NONE"}]},
+                        {"contributionDays": [
+                          {"date": "2026-01-03", "contributionCount": 1, "contributionLevel": "FIRST_QUARTILE"}]}
+                      ]}}}}}
+                    """;
+            Contributions.Calendar calendar = Contributions.parseApi(json, 2026);
+            equal(299, calendar.count());
+            equal("2026", calendar.period());
+            equal(3, calendar.days().size());
+            equal(LocalDate.of(2026, 1, 1), calendar.days().get(0).date());
+            equal("No contributions on January 1st.", calendar.days().get(0).label());
+            equal(3, calendar.days().get(1).level());
+            equal("7 contributions on January 2nd.", calendar.days().get(1).label());
+            equal("1 contribution on January 3rd.", calendar.days().get(2).label());
+        });
+
+        test("the overview names only public repos, and counts private ones as others", () -> {
+            String json = """
+                    {"data": {"user": {"contributionsCollection": {
+                      "contributionCalendar": {"totalContributions": 3, "weeks": [{"contributionDays": [
+                        {"date": "2026-01-01", "contributionCount": 3, "contributionLevel": "FOURTH_QUARTILE"}]}]},
+                      "totalCommitContributions": 97, "totalIssueContributions": 3,
+                      "totalPullRequestContributions": 0, "totalPullRequestReviewContributions": 0,
+                      "commitContributionsByRepository": [
+                        {"repository": {"nameWithOwner": "me/secret", "isPrivate": true}, "contributions": {"totalCount": 50}},
+                        {"repository": {"nameWithOwner": "me/one", "isPrivate": false}, "contributions": {"totalCount": 30}},
+                        {"repository": {"nameWithOwner": "me/two", "isPrivate": false}, "contributions": {"totalCount": 17}}]
+                    }}}}
+                    """;
+            Contributions.Overview overview = Contributions.parseApi(json, 2026).overview();
+            equal(97, overview.commits());
+            equal(List.of("me/one", "me/two"), overview.publicRepos());
+            String html = Contributions.overview(overview);
+            lacks(html, "secret");
+            contains(html, ">me/one</a>, <a href=\"https://github.com/me/two\">me/two</a> and 1 other repository");
+            contains(html, ">97%</text>");
+            contains(html, ">3%</text>");
+            contains(html, ">Pull requests</text>");
+            lacks(html, ">0%</text>");
+        });
+
+        test("no overview without the API's data, so the public fallback still works", () -> {
+            equal("", Contributions.overview(null));
+            lacks(Contributions.graph(calendar(5, LocalDate.of(2026, 1, 4), 7)), "Activity overview");
+        });
+
+        test("an API error is reported, so the saved graph is kept", () -> {
+            fails(() -> Contributions.parseApi("{\"errors\": [{\"message\": \"Bad credentials\"}]}", 2026));
+            fails(() -> Contributions.parseApi("{\"data\": {\"user\": null}}", 2026));
+        });
+
+        test("day numbers get the right ending: 1st, 2nd, 3rd, 4th, 11th, 12th, 13th, 21st, 22nd", () -> {
+            equal("1st 2nd 3rd 4th 11th 12th 13th 21st 22nd 23rd 31st",
+                    String.join(" ", java.util.stream.IntStream.of(1, 2, 3, 4, 11, 12, 13, 21, 22, 23, 31)
+                            .mapToObj(Contributions::ordinal).toList()));
+        });
+
+        test("index.html still has both sets of markers, so refreshes have somewhere to go", () -> {
+            String page = Files.readString(Path.of("index.html"));
+            isTrue(Contributions.hasMarkers(page), "contribution graph markers");
+            isTrue(Projects.hasMarkers(page), "project card markers");
+        });
+    }
+}

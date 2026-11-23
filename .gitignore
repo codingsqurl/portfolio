@@ -1,0 +1,54 @@
+# Files git should never track or upload. Anything listed here stays on this Mac only.
+
+# ---------- Secrets ----------
+# Keys, tokens and passwords never go in the code. The server reads its GitHub token
+# from the GITHUB_TOKEN environment variable at run time; locally ./run.sh gets it from
+# the gh tool, so it never needs to be written in a file at all. If you ever do keep
+# one in a file, name it so it matches a rule below.
+.env
+.env.*
+!.env.example
+*.secret
+*.secrets
+secrets/
+secrets.*
+credentials*
+*.token
+*token*.txt
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+# Fly.io's local login and config overrides
+.fly/
+fly.local.toml
+
+# ---------- Personal ----------
+# My personal to-do notes
+abel.md
+# Design tool settings (Impeccable), not part of the site
+.impeccable/
+# Local Claude Code tooling, not part of the site
+.claude/
+
+# ---------- Build output ----------
+# Compiled Java classes from ./run.sh
+build/
+build-test/
+build-pages/
+.pages-worktree/
+
+# ---------- Clutter ----------
+# Mac's hidden folder-settings files
+.DS_Store
+# Installed packages, if you ever add them
+node_modules/
+# Leftovers from the old Python server
+.venv/
+__pycache__/
+*.log
