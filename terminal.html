@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!-- The "I live in the terminal" page, at /terminal. The server (Server.java) serves it
+     with the same stylesheet and security rules as the home page. -->
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I live in the terminal · coding squrl</title>
+    <meta name="description" content="coding_squrl basically lives in the terminal. Here's proof, typed out one command at a time.">
+    <meta name="author" content="coding squrl">
+    <link rel="canonical" href="https://codingsqurl.github.io/portfolio/terminal">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="I live in the terminal · coding squrl">
+    <meta property="og:description" content="There's no place like 127.0.0.1.">
+    <meta property="og:url" content="https://codingsqurl.github.io/portfolio/terminal">
+    <meta property="og:image" content="https://codingsqurl.github.io/portfolio/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="style.css?v=ff924e8f">
+  </head>
+
+  <!-- term-page switches on the styles for this page (see "Terminal page" in style.css). -->
+  <body class="term-page">
+
+    <main class="term-main">
+      <p class="eyebrow">~/home is where the shell is</p>
+      <h1>I basically live in the terminal.</h1>
+
+      <!-- The animation is pure CSS: the site runs no JavaScript. Each line waits its turn,
+           then each command "types" itself by widening one character at a time.
+           The timings are set per line in style.css, so if you add or remove a line here,
+           update the list of delays there too. -->
+      <div class="term-window">
+        <div class="term-bar" aria-hidden="true">
+          <span class="term-dot term-dot-red"></span>
+          <span class="term-dot term-dot-gold"></span>
+          <span class="term-dot term-dot-green"></span>
+          <span class="term-title">squrl@127.0.0.1 — zsh — 80×24</span>
+        </div>
+
+        <ol class="term-lines">
+          <li class="t-cmd"><span class="t-prompt">~ %</span> <span class="t-typed">whoami</span></li>
+          <li>coding_squrl</li>
+
+          <li class="t-cmd"><span class="t-prompt">~ %</span> <span class="t-typed">uptime</span></li>
+          <li>up 365 days, 1 user, load average: coffee, coffee, coffee</li>
+
+          <li class="t-cmd"><span class="t-prompt">~ %</span> <span class="t-typed">ls ~</span></li>
+          <li><span class="t-dir">code/</span>  <span class="t-dir">dotfiles/</span>  <span class="t-dir">more-code/</span>  <span class="t-dir">side-projects/</span></li>
+
+          <li class="t-cmd"><span class="t-prompt">~ %</span> <span class="t-typed">history | wc -l</span></li>
+          <li>   48213</li>
+
+          <li class="t-cmd"><span class="t-prompt">~ %</span> <span class="t-typed">cd ~/outside</span></li>
+          <li class="t-err">cd: no such file or directory: ~/outside</li>
+
+          <li class="t-cmd"><span class="t-prompt">~ %</span> <span class="t-typed">which mouse</span></li>
+          <li class="t-err">mouse not found</li>
+
+          <li class="t-cmd"><span class="t-prompt">~ %</span> <span class="t-typed">ping home</span></li>
+          <li>PING home (127.0.0.1): 56 data bytes</li>
+          <li class="t-punchline">there's no place like 127.0.0.1</li>
+
+          <li class="t-cmd"><span class="t-prompt">~ %</span> <span class="t-cursor" aria-hidden="true"></span></li>
+        </ol>
+      </div>
+
+      <p class="term-actions">
+        <!-- Loading the page again restarts the animation. -->
+        <a class="link-arrow" href="terminal">Run it again</a>
+        <a class="button" href="./">Back to the homepage</a>
+      </p>
+    </main>
+
+  </body>
+</html>
