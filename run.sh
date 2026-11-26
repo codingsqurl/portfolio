@@ -2,6 +2,7 @@
 # Builds and runs the Java server on this computer.
 #
 #   ./run.sh           start the server at http://127.0.0.1:8000
+#   ./run.sh dev       same, but edits show up on refresh (for working on the site)
 #   ./run.sh refresh   update the backup cards and graph saved in index.html
 #   ./run.sh test      run the tests (they never call GitHub)
 #   ./run.sh pages     rebuild the GitHub Pages copy with fresh GitHub data and publish it
@@ -55,6 +56,11 @@ if [ "$1" = "pages" ]; then
   git worktree remove .pages-worktree
   rm -rf build-pages
   exit 0
+fi
+
+# Dev mode: edits to the HTML, CSS and JS show up on a normal refresh.
+if [ "$1" = "dev" ]; then
+  DEV=1 HOST="${HOST:-127.0.0.1}" PORT="${PORT:-8000}" exec java -cp build portfolio.Server
 fi
 
 if [ "$1" = "refresh" ]; then

@@ -28,7 +28,7 @@ import java.time.LocalDate;
 public final class Snapshot {
     private Snapshot() {}
 
-    static final String[] FILES = {"style.css", "favicon.svg", "og-image.png"};
+    static final String[] FILES = {"style.css", "consent.js", "motion.js", "gsap.min.js", "ScrollTrigger.min.js", "favicon.svg", "og-image.png"};
     static final String FLY = "https://codingsqurl.fly.dev/";
 
     public static void main(String[] args) throws Exception {

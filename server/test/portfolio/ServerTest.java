@@ -130,6 +130,10 @@ final class ServerTest {
         test("the public files load with the right types", () -> {
             equal("image/svg+xml", Client.get("/favicon.svg").header("Content-Type"));
             equal("image/png", Client.get("/og-image.png").header("Content-Type"));
+            equal("text/javascript; charset=utf-8", Client.get("/consent.js").header("Content-Type"));
+            equal("text/javascript; charset=utf-8", Client.get("/motion.js").header("Content-Type"));
+            equal(200, Client.get("/gsap.min.js").status());
+            equal(200, Client.get("/ScrollTrigger.min.js").status());
             equal("text/plain; charset=utf-8", Client.get("/robots.txt").header("Content-Type"));
             equal("public, max-age=86400", Client.get("/robots.txt").header("Cache-Control"));
         });
@@ -151,7 +155,12 @@ final class ServerTest {
             contains(terminal.text(), "I basically live in the terminal.");
             contains(terminal.text(), "there's no place like 127.0.0.1");
             isTrue(terminal.text().matches("(?s).*href=\"style\\.css\\?v=[0-9a-f]{8}\".*"), "style.css?v=<8 hex>");
-            lacks(terminal.text(), "<script");
+            // The only scripts are the cookie banner and the animations, all from this site.
+            contains(terminal.text(), "<script src=\"consent.js\" defer></script>");
+            contains(terminal.text(), "<script src=\"gsap.min.js\" defer></script>");
+            contains(terminal.text(), "<script src=\"motion.js\" defer></script>");
+            equal(3, terminal.text().split("<script", -1).length - 1);
+            lacks(terminal.text(), "<script src=\"http");
         });
 
         test("the home page's nav links to the terminal page", () -> {

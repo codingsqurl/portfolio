@@ -41,6 +41,10 @@ public final class Server {
     // the server's own code) stays private, even if someone guesses its name.
     // The number is how many seconds a browser may keep its copy.
     static final Map<String, Integer> PUBLIC_FILES = Map.of(
+            "consent.js", 60 * 60,          // 1 hour, so fixes reach visitors quickly
+            "motion.js", 60 * 60,           // 1 hour
+            "gsap.min.js", 60 * 60 * 24,    // 1 day (the GSAP animation library)
+            "ScrollTrigger.min.js", 60 * 60 * 24,
             "favicon.svg", 60 * 60 * 24,    // 1 day
             "og-image.png", 60 * 60 * 24,   // 1 day
             "robots.txt", 60 * 60 * 24,     // 1 day
@@ -52,6 +56,7 @@ public final class Server {
             "txt", "text/plain; charset=utf-8",
             "xml", "application/xml; charset=utf-8",
             "css", "text/css; charset=utf-8",
+            "js", "text/javascript; charset=utf-8",
             "html", "text/html; charset=utf-8");
 
     // How often to ask GitHub for the latest repos and contribution graph, and how soon to
@@ -60,9 +65,14 @@ public final class Server {
     static final long REFRESH = 60 * 10;        // 10 minutes
     static final long RETRY = 60 * 2;           // 2 minutes
 
-    // The browser's safety rules: only load files from this site, never run scripts,
-    // and never let another site show this one inside a frame.
-    static final String CSP = "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; "
+    // The browser's safety rules: only load files from this site, run only this site's own
+    // script (consent.js) plus Google Analytics, and never let another site show this one
+    // inside a frame. Google's script only loads after a visitor accepts the cookie banner;
+    // the Google domains below are the ones GA4 needs to load and send page views.
+    static final String GA_SCRIPT = "https://www.googletagmanager.com";
+    static final String GA_HOSTS = "https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com";
+    static final String CSP = "default-src 'self'; img-src 'self' data: " + GA_HOSTS + "; style-src 'self'; "
+            + "script-src 'self' " + GA_SCRIPT + "; connect-src 'self' " + GA_HOSTS + "; "
             + "object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
     // The 404 page keeps its styles inside itself, so it also needs inline styles allowed.
     static final String CSP_404 = CSP.replace("style-src 'self'", "style-src 'self' 'unsafe-inline'");
@@ -97,6 +107,11 @@ public final class Server {
     static final boolean OFFLINE = Boolean.getBoolean("portfolio.offline");
     // With -Dportfolio.quiet=true the server doesn't log each request, so test output stays readable.
     static final boolean QUIET = Boolean.getBoolean("portfolio.quiet");
+    // DEV=1 (./run.sh dev) is for working on the site: the home page is rebuilt from
+    // index.html on every request (with the saved cards and graph, so no GitHub calls), and
+    // browsers are told to check for a newer copy of every file, so a refresh shows your
+    // latest save. The security headers stay the same, so you test what goes live.
+    static final boolean DEV = "1".equals(System.getenv("DEV"));
 
     public static void main(String[] args) throws IOException {
         int port = Integer.parseInt(envOr("PORT", "8080"));
@@ -105,7 +120,8 @@ public final class Server {
         HttpServer server = start(host, port);
         // When the host stops the server, let requests in progress finish (up to a second).
         Runtime.getRuntime().addShutdownHook(new Thread(() -> server.stop(1)));
-        System.out.println("serving " + SITE + " on http://" + host + ":" + port);
+        System.out.println("serving " + SITE + " on http://" + host + ":" + port
+                + (DEV ? " (dev mode: edits show on refresh)" : ""));
     }
 
     /**
@@ -189,7 +205,8 @@ public final class Server {
             return terminal(exchange);
         }
         if (path.equals("/style.css")) {
-            String cache = styleVersion().equals(queryValue(exchange, "v"))
+            String cache = DEV ? "no-cache"
+                    : styleVersion().equals(queryValue(exchange, "v"))
                     ? "public, max-age=31536000, immutable"
                     : "public, max-age=600";
             send(exchange, 200, read(STYLE_CSS), CONTENT_TYPES.get("css"), Map.of("Cache-Control", cache));
@@ -199,7 +216,7 @@ public final class Server {
         String name = path.substring(1);
         if (PUBLIC_FILES.containsKey(name)) {
             send(exchange, 200, read(SITE.resolve(name)), contentType(name),
-                    Map.of("Cache-Control", "public, max-age=" + PUBLIC_FILES.get(name)));
+                    Map.of("Cache-Control", DEV ? "no-cache" : "public, max-age=" + PUBLIC_FILES.get(name)));
             return 200;
         }
 
@@ -221,7 +238,7 @@ public final class Server {
         private long nextRefresh = 0;
 
         synchronized String[] get() {
-            if (System.nanoTime() >= nextRefresh) {
+            if (DEV || System.nanoTime() >= nextRefresh) {
                 rebuild();
             }
             return new String[] {html, etag};
@@ -231,7 +248,7 @@ public final class Server {
             String page = new String(read(SITE.resolve("index.html")), StandardCharsets.UTF_8);
             page = withStyleVersion(page);
 
-            if (OFFLINE) {
+            if (OFFLINE || DEV) {
                 html = page;
                 etag = "\"" + sha256(page.getBytes(StandardCharsets.UTF_8)).substring(0, 16) + "\"";
                 nextRefresh = System.nanoTime() + REFRESH * 1_000_000_000L;

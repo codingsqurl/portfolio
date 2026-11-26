@@ -1,7 +1,8 @@
 # portfolio
 
-My web dev portfolio: hand-written HTML and CSS, with a small Java server that
-uses only what comes with Java 21, with no framework or libraries.
+My web dev portfolio: hand-written HTML and CSS with a little JavaScript (GSAP
+animations and a cookie consent banner), and a small Java server that uses only what
+comes with Java 21, with no framework or libraries.
 
 Live at https://codingsqurl.github.io/portfolio/ (a static copy on GitHub Pages;
 see "Deploy" below). The terminal page is at https://codingsqurl.github.io/portfolio/terminal.

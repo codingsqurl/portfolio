@@ -1,6 +1,7 @@
 package portfolio;
 
 import static portfolio.Check.contains;
+import static portfolio.Check.isTrue;
 import static portfolio.Check.lacks;
 import static portfolio.Check.section;
 import static portfolio.Check.test;
@@ -17,10 +18,18 @@ final class SnapshotTest {
     static void run() {
         section("Snapshot");
 
-        test("the home page carries the no-scripts policy in a meta tag", () -> {
+        test("the home page carries the security policy in a meta tag", () -> {
             String page = Snapshot.forPages(Files.readString(Path.of("index.html")), BASE);
             contains(page, "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self';");
-            contains(page, "script-src 'none'");
+            // Only this site's own script and Google Analytics may run, never inline scripts.
+            contains(page, "script-src 'self' https://www.googletagmanager.com;");
+            lacks(page, "unsafe-inline");
+        });
+
+        test("the Pages copy includes the cookie banner script", () -> {
+            boolean found = false;
+            for (String name : Snapshot.FILES) found |= name.equals("consent.js");
+            isTrue(found, "consent.js is in Snapshot.FILES");
         });
 
         test("the meta tag leaves out frame-ancestors, which browsers ignore there", () -> {
