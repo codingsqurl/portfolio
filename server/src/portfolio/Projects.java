@@ -33,9 +33,12 @@ final class Projects {
     private Projects() {}
 
     static final String USER = "codingsqurl";
-    // Repos that never get a card, even when public.
-    static final Set<String> SKIP = Set.of("portfolio");
-    // At most this many cards, so the Work section shows only my most recent work.
+    // Repos that never get a card, even when public. Empty for now: this site's own repo
+    // counts as a project too. Add a repo's name here to keep it off the page.
+    static final Set<String> SKIP = Set.of();
+    // At most this many cards, so the Work section shows only my most recent work. Four
+    // fills a 2-by-2 grid; style.css shows only three when the cards are in a column or
+    // in one row of three, so every layout stays even.
     static final int MAX_CARDS = 4;
 
     static final String START = "<!-- GITHUB-PROJECTS -->";

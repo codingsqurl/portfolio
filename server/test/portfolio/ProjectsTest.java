@@ -15,7 +15,8 @@ import java.util.Map;
 final class ProjectsTest {
     private ProjectsTest() {}
 
-    // A cut-down copy of what GitHub sends, with one repo of each kind that should be skipped.
+    // A cut-down copy of what GitHub sends, with one repo of each kind that should be skipped,
+    // plus this site's own repo, which gets a card like any other.
     static final String REPOS = """
             [
               {"name": "older", "private": false, "fork": false, "archived": false,
@@ -49,13 +50,14 @@ final class ProjectsTest {
     static void run() {
         section("Projects");
 
-        test("only public repos of mine get cards: no private, forks, archived or the portfolio", () -> {
+        test("only public repos of mine get cards: no private, forks or archived", () -> {
             List<String> names = Projects.parseRepos(REPOS).stream().map(r -> (String) r.get("name")).toList();
-            equal(List.of("newer", "older"), names);
+            equal(List.of("portfolio", "newer", "older"), names);
         });
 
         test("cards are sorted newest first", () -> {
-            equal("newer", Projects.parseRepos(REPOS).get(0).get("name"));
+            equal("portfolio", Projects.parseRepos(REPOS).get(0).get("name"));
+            equal("newer", Projects.parseRepos(REPOS).get(1).get("name"));
         });
 
         test("only the most recently pushed few repos get cards", () -> {
