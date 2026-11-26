@@ -503,14 +503,47 @@ a:hover {
 
 /* ---------- Project grid ---------- */
 
+/* The server sends up to four projects, newest first. The layout keeps every row full:
+     - phones: one column of the newest three
+     - medium screens: a 2-by-2 grid of all four
+     - wide screens: one row of the newest three
+   If there are fewer than four, medium screens stay a single column instead of
+   leaving a gap. */
 .card-grid {
   display: grid;
-  /* "Fit as many 260px-wide columns as there is room for, and stretch them to fill."
-     That one line puts the projects 2 or 3 across on wide screens and 1 on phones. */
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  grid-template-columns: 1fr;
   gap: clamp(28px, 4vw, 40px) clamp(24px, 4vw, 48px);
   padding: clamp(24px, 3.5vw, 40px);
   margin-top: clamp(32px, 5vw, 56px);
+}
+
+/* Columns and single rows show three. */
+.card-grid > .card:nth-of-type(n + 4) {
+  display: none;
+}
+
+/* Medium screens with four projects: a 2-by-2 grid. */
+@media (min-width: 640px) and (max-width: 959.98px) {
+  .card-grid:has(> .card:nth-of-type(4)) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card-grid > .card:nth-of-type(4) {
+    display: flex;
+  }
+}
+
+/* Wide screens: one row of three. */
+@media (min-width: 960px) {
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Each card is a column, so its links sit along the bottom and line up across the row. */
+.card {
+  display: flex;
+  flex-direction: column;
 }
 
 /* ---------- Strengths banner ----------
@@ -562,9 +595,11 @@ a:hover {
   margin-bottom: 8px;
 }
 
-/* The "View code →" links on cards that come from GitHub. */
+/* The "View code →" links on cards that come from GitHub. margin-top: auto pushes
+   them to the bottom of the card, level with the links on the cards beside it. */
 .card .card-links {
-  margin-top: 16px;
+  margin-top: auto;
+  padding-top: 16px;
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
