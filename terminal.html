@@ -5,7 +5,7 @@
 
   <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; style-src 'self'; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; object-src 'none'; base-uri 'none'; form-action 'none'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I live in the terminal · coding squrl</title>
     <meta name="description" content="coding_squrl basically lives in the terminal. Here's proof, typed out one command at a time.">
@@ -19,7 +19,12 @@
     <meta property="og:url" content="https://codingsqurl.github.io/portfolio/terminal">
     <meta property="og:image" content="https://codingsqurl.github.io/portfolio/og-image.png">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="stylesheet" href="style.css?v=ff924e8f">
+    <link rel="stylesheet" href="style.css?v=5f886498">
+    <!-- Animations: GSAP, kept on this site, and motion.js, which says what moves. -->
+    <script src="gsap.min.js" defer></script>
+    <script src="motion.js" defer></script>
+    <!-- Cookie banner + Google Analytics (only after the visitor accepts). -->
+    <script src="consent.js" defer></script>
   </head>
 
   <!-- term-page switches on the styles for this page (see "Terminal page" in style.css). -->
@@ -29,7 +34,7 @@
       <p class="eyebrow">~/localhost is the only place where the good coffee is</p>
       <h1>I basically live in the terminal.</h1>
 
-      <!-- The animation is pure CSS: the site runs no JavaScript. Each line waits its turn,
+      <!-- The typing is pure CSS (motion.js only opens the window). Each line waits its turn,
            then each command "types" itself by widening one character at a time.
            The timings are set per line in style.css, so if you add or remove a line here,
            update the list of delays there too. -->
