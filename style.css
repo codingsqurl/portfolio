@@ -1012,17 +1012,9 @@ a:hover {
 }
 
 
-/* ---------- Fade in on scroll ----------
-   Sections fade and rise into place as they scroll into view.
-   @supports means "only do this if the browser understands it", so older
-   browsers simply show everything normally. */
-@supports (animation-timeline: view()) {
-  .reveal {
-    animation: fade-up linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 40%;
-  }
-}
+/* ---------- No fade-in on scroll ----------
+   Sections used to fade and rise in as they scrolled into view. The taste-skill pass took
+   that out: content is just there when you reach it. */
 
 @keyframes fade-up {
   from {
@@ -1474,4 +1466,32 @@ a:hover {
 /* Reduced motion: the finished session, with a steady cursor. */
 @media (prefers-reduced-motion: reduce) {
   .t-cursor { animation: none; }
+}
+
+
+/* ---------- Taste pass (2026-11-27) ---------- */
+
+/* A clear focus ring on everything you can Tab to, visible on the dark and light bands. */
+:focus-visible {
+  /* Outline only: the buttons animate box-shadow, which would make the ring fade in late. */
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* "Skip to content": hidden until a keyboard user presses Tab, then it shows at the top. */
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: -100px;
+  z-index: 1000;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #000000;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 12px;
 }
