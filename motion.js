@@ -48,6 +48,21 @@
   var isHome = !!$(".hero");
   var isTerminal = document.body.classList.contains("term-page");
 
+  // ===== Everyone: the tool chips' light wave waits until you see it =====
+  // The wave is a CSS loop (style.css, "Skill chips"). It's held back until the chips are
+  // a third of the way on screen, then starts from the first chip.
+  var chipList = $(".chips");
+  if (chipList && "IntersectionObserver" in window) {
+    document.documentElement.classList.add("chips-wait");
+    var chipWatch = new IntersectionObserver(function (entries) {
+      if (entries.some(function (e) { return e.isIntersecting; })) {
+        chipList.classList.add("lit");
+        chipWatch.disconnect();
+      }
+    }, { threshold: 0.33 });
+    chipWatch.observe(chipList);
+  }
+
   // ===== Everyone: show where you are on the page =====
 
   if (isHome && ScrollTrigger) {

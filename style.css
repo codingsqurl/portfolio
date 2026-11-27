@@ -974,6 +974,12 @@ a:hover {
   animation: chip-light 6.65s ease-in-out infinite;
 }
 
+/* motion.js holds the wave back until the chips scroll into view, so it starts from the
+   first chip when you actually see it. Without the script the wave just runs. */
+.chips-wait .chips:not(.lit) li {
+  animation: none;
+}
+
 .chips li:nth-child(3n + 2) { --bulb: var(--rasta-gold); }
 .chips li:nth-child(3n + 3) { --bulb: var(--rasta-red); }
 
