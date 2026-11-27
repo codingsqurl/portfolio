@@ -21,6 +21,8 @@
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <!-- The little icon on the browser tab. -->
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!-- Tints the phone's browser bar to match the page. -->
+    <meta name="theme-color" content="#000000">
     <!-- Open Graph: the title, text and picture shown when someone shares your link
          in iMessage, Discord, LinkedIn and so on. These must be full web addresses,
          so update them if you move to your own domain. -->
@@ -84,6 +86,8 @@
 
   <!-- The <body> holds everything you SEE on the page. -->
   <body>
+    <!-- For keyboard users: the first Tab shows this, and Enter jumps past the nav. -->
+    <a class="skip-link" href="#main">Skip to content</a>
 
     <!-- A slim navigation bar that sticks to the top while you scroll. -->
     <nav class="site-nav">
@@ -114,7 +118,7 @@
       </div>
     </header>
 
-    <main>
+    <main id="main">
 
       <!-- ===== STRENGTHS: what I bring, each backed by real work =====
            Near the top, because employers skim. Each card makes one claim

@@ -132,22 +132,8 @@
         .from(".hero .eyebrow", { y: 12, scale: 0.94, opacity: 0, duration: 0.7 }, 0.1)
         .from(".hero-actions > *", { y: 18, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.25);
 
-      // Projects come in one after another, sharpening as they arrive.
-      var cards = $$(".card-grid .card");
-      gsap.set(cards, { y: 32, opacity: 0, filter: "blur(6px)" });
-      onFirstView($(".card-grid"), function () {
-        gsap.to(cards, {
-          y: 0, opacity: 1, filter: "blur(0px)",
-          duration: 0.8, ease: ARRIVE, stagger: 0.09, clearProps: "filter"
-        });
-      });
-
-      // The four strengths slide in from the left, in order.
-      var strengths = $$(".strengths-banner .strength");
-      gsap.set(strengths, { x: -24, opacity: 0 });
-      onFirstView($(".strengths-banner"), function () {
-        gsap.to(strengths, { x: 0, opacity: 1, duration: 0.7, ease: ARRIVE, stagger: 0.08 });
-      });
+      // Cards, strengths, chips and About answers no longer fade in on scroll: they sit
+      // ready when you get to them (taste-skill pass). The visuals below still play.
 
       // The year replays: the contribution squares fill in week by week, January first.
       // Only their size animates, so the CSS twinkle (which uses opacity) carries on.
@@ -169,15 +155,8 @@
         }, "top 80%");
       }
 
-      // Tool chips drop in as a group, then hop when you point at one.
+      // Tool chips hop when you point at one.
       var chips = $$(".chips li");
-      gsap.set(chips, { y: -14, opacity: 0 });
-      onFirstView($(".chips"), function () {
-        gsap.to(chips, {
-          y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.8)",
-          stagger: { each: 0.03, from: "center" }
-        });
-      });
       chips.forEach(function (chip) {
         chip.addEventListener("pointerenter", function () {
           gsap.fromTo(chip, { y: 0 }, {
@@ -212,12 +191,6 @@
         }, "top 80%");
       }
 
-      // The About answers lift in one by one.
-      var answers = $$(".qa .qa-item");
-      gsap.set(answers, { y: 20, opacity: 0 });
-      onFirstView($(".qa"), function () {
-        gsap.to(answers, { y: 0, opacity: 1, duration: 0.7, ease: ARRIVE, stagger: 0.08 });
-      });
     }
 
     // The rasta glow behind the page drifts as you scroll, each colour at its own depth,
