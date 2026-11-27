@@ -155,10 +155,11 @@ final class ServerTest {
             contains(terminal.text(), "I basically live in the terminal.");
             contains(terminal.text(), "there's no place like 127.0.0.1");
             isTrue(terminal.text().matches("(?s).*href=\"style\\.css\\?v=[0-9a-f]{8}\".*"), "style.css?v=<8 hex>");
+            equal(200, Client.get("/motion.js?v=whatever").status());
             // The only scripts are the cookie banner and the animations, all from this site.
-            contains(terminal.text(), "<script src=\"consent.js\" defer></script>");
+            isTrue(terminal.text().matches("(?s).*<script src=\"consent\\.js\\?v=[0-9a-f]{8}\" defer></script>.*"), "consent.js script");
             contains(terminal.text(), "<script src=\"gsap.min.js\" defer></script>");
-            contains(terminal.text(), "<script src=\"motion.js\" defer></script>");
+            isTrue(terminal.text().matches("(?s).*<script src=\"motion\\.js\\?v=[0-9a-f]{8}\" defer></script>.*"), "motion.js script");
             equal(3, terminal.text().split("<script", -1).length - 1);
             lacks(terminal.text(), "<script src=\"http");
         });

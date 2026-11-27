@@ -312,9 +312,18 @@ public final class Server {
         return 200;
     }
 
-    /** Points a page's stylesheet link at the fingerprinted address (style.css?v=...). */
+    /**
+     * Points a page's stylesheet link at the fingerprinted address (style.css?v=...), and
+     * its own scripts too (motion.js?v=...). Browsers keep scripts for an hour, so without
+     * the fingerprint a fresh page could run with yesterday's motion.js.
+     */
     static String withStyleVersion(String page) {
-        return page.replace("href=\"style.css\"", "href=\"style.css?v=" + styleVersion() + "\"");
+        page = page.replace("href=\"style.css\"", "href=\"style.css?v=" + styleVersion() + "\"");
+        for (String script : new String[] {"motion.js", "consent.js"}) {
+            String version = sha256(read(SITE.resolve(script))).substring(0, 8);
+            page = page.replace("src=\"" + script + "\"", "src=\"" + script + "?v=" + version + "\"");
+        }
+        return page;
     }
 
     // ---------- Sending responses ----------
