@@ -48,11 +48,14 @@ public final class Server {
             "favicon.svg", 60 * 60 * 24,    // 1 day
             "og-image.png", 60 * 60 * 24,   // 1 day
             "robots.txt", 60 * 60 * 24,     // 1 day
-            "sitemap.xml", 60 * 60 * 24);   // 1 day
+            "sitemap.xml", 60 * 60 * 24,    // 1 day
+            "space-grotesk.woff2", 60 * 60 * 24 * 30,  // 30 days (fonts never change)
+            "plex-mono.woff2", 60 * 60 * 24 * 30);
 
     static final Map<String, String> CONTENT_TYPES = Map.of(
             "svg", "image/svg+xml",
             "png", "image/png",
+            "woff2", "font/woff2",
             "txt", "text/plain; charset=utf-8",
             "xml", "application/xml; charset=utf-8",
             "css", "text/css; charset=utf-8",

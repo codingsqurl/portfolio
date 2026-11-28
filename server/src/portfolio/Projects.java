@@ -98,7 +98,9 @@ final class Projects {
                 ? "A " + (rawLanguage.isEmpty() ? "code" : rawLanguage) + " project."
                 : rawDescription);
 
-        String links = "<a href=\"" + Html.escape(text(repo, "html_url")) + "\">View code →</a>";
+        // Every card's links say the same thing, so each also gets a label naming its
+        // project. Screen readers that list a page's links then say which one is which.
+        String links = "<a href=\"" + Html.escape(text(repo, "html_url")) + "\" aria-label=\"View the code for " + name + "\">View code →</a>";
         String homepage = text(repo, "homepage");
         if (!homepage.isEmpty()) {
             links = "<a href=\"" + Html.escape(homepage) + "\">Visit site →</a> " + links;

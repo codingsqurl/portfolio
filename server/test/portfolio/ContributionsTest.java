@@ -143,7 +143,9 @@ final class ContributionsTest {
             String svg = Contributions.activity(days, LocalDate.of(2026, 11, 22));
             equal(31, svg.split("<circle ", -1).length - 1);
             contains(svg, "62 contributions in the last 31 days");
-            contains(svg, ">Nov 22</text>");
+            // Today's label ends at the right edge, so it isn't cut off.
+            contains(svg, "text-anchor=\"end\">Nov 22</text>");
+            contains(svg, "text-anchor=\"middle\">Nov 17</text>");
             lacks(svg, "2026-11-23");
             lacks(svg, "<rect ");
         });

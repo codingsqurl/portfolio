@@ -78,7 +78,7 @@ final class ProjectsTest {
             contains(card, "Rust · Updated Jul 2026");
             contains(card, "<h3>demo</h3>");
             contains(card, "<p>Does things.</p>");
-            contains(card, "<a href=\"https://github.com/codingsqurl/demo\">View code →</a>");
+            contains(card, "<a href=\"https://github.com/codingsqurl/demo\" aria-label=\"View the code for demo\">View code →</a>");
         });
 
         test("a repo with a homepage also gets a Visit site link, first", () -> {

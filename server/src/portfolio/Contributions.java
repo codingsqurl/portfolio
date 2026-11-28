@@ -379,8 +379,11 @@ final class Contributions {
                     .append("\" r=\"3\"><title>").append(Html.escape(day.label())).append("</title></circle>");
             // Label every fifth day, counting back from today so the newest day always has a label.
             if ((days.size() - 1 - i) % 5 == 0) {
+                // Today's label sits at the right edge, so it ends there instead of being
+                // centred on it, or its second half falls outside the graph and gets cut off.
+                String anchor = i == days.size() - 1 ? "end" : "middle";
                 labels.append("<text x=\"").append(x).append("\" y=\"").append(A_HEIGHT - 6)
-                        .append("\" text-anchor=\"middle\">").append(day.date().format(label)).append("</text>");
+                        .append("\" text-anchor=\"").append(anchor).append("\">").append(day.date().format(label)).append("</text>");
             }
         }
         String area = line + " L" + num(A_LEFT + plotWidth) + ' ' + num(base) + " L" + A_LEFT + ' ' + num(base) + " Z";

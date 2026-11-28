@@ -8,27 +8,38 @@
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <!-- Tells search engines not to list this page. -->
     <meta name="robots" content="noindex">
+    <!-- Tints the phone's browser bar to match the dark page. -->
+    <meta name="theme-color" content="#000000">
     <title>Page not found · coding squrl</title>
     <!-- The tab icon. The full path is needed here for the same reason as the styles below. -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <!-- This page can show up at any address, even a deep one like /a/b/c, so a link to
          style.css could point to the wrong place. Keeping the styles here avoids that. -->
     <style>
+      /* The same dark look as the rest of the site: the colours from style.css's
+         variables, a soft rasta glow behind, and the site's glass pill button. */
       :root {
-        --text: #1d1d1f;
-        --text-muted: #6e6e73;
-        --bg-light: #f5f5f7;
-        --accent: #0071e3;
-        --accent-hover: #0077ed;
+        color-scheme: dark;
+        --text: #f5f5f7;
+        --text-muted: #a1a1a6;
+        --bg: #000000;
+        --rasta-green: #1fb954;
+        --rasta-gold: #fcd116;
+        --rasta-red: #e8333c;
       }
 
       body {
         font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background-color: var(--bg-light);
+        background:
+          radial-gradient(ellipse 45% 40% at 15% 20%, rgba(31, 185, 84, 0.16), transparent 70%),
+          radial-gradient(ellipse 40% 35% at 50% 55%, rgba(252, 209, 22, 0.08), transparent 70%),
+          radial-gradient(ellipse 45% 40% at 85% 80%, rgba(232, 51, 60, 0.14), transparent 70%),
+          var(--bg);
         color: var(--text);
         line-height: 1.5;
         margin: 0;
         min-height: 100vh;
+        min-height: 100dvh;
         display: grid;
         place-items: center;
         text-align: center;
@@ -41,32 +52,692 @@
         letter-spacing: -0.02em;
         line-height: 1.1;
         margin: 0 0 0.4em;
+        text-wrap: balance;
       }
 
       p {
         color: var(--text-muted);
         margin: 0 0 1.5em;
+        font-size: clamp(1rem, 1.8vw, 1.2rem);
+        text-wrap: balance;
       }
 
+      /* The site's liquid-glass pill. */
       .button {
         display: inline-block;
-        background-color: var(--accent);
-        color: white;
-        padding: 12px 22px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 60%), rgba(255, 255, 255, 0.14);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.3),
+          inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.09),
+          0 10px 40px rgba(0, 0, 0, 0.35);
+        color: #ffffff;
+        font-weight: 500;
+        padding: 12px 24px;
         border-radius: 980px;
         text-decoration: none;
-        transition: background-color 0.2s, transform 0.2s;
+        transition: filter 0.2s, transform 0.2s;
       }
 
       .button:hover {
-        background-color: var(--accent-hover);
-        transform: scale(1.03);
+        transform: translateY(-1px);
+        filter: brightness(1.25);
+      }
+
+      .button:focus-visible {
+        outline: 2px solid #ffffff;
+        outline-offset: 3px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .button { transition: none; }
+      }
+
+      /* From Uiverse.io by Praashoo7 - https://uiverse.io/Praashoo7/fat-horse-65
+         MIT License, Copyright (c) Praashoo7 (Prashant)
+
+         A little orange TV showing "NOT FOUND" in front of a giant 404. Every class sits
+         under .tv404 so its generic names (.main, .tv, .screen) can't clash with anything.
+         Montserrat isn't loaded (the security policy allows no outside fonts), so the
+         system font stands in. */
+      .tv404 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30em;
+        height: 30em;
+      }
+
+      .tv404 .main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 5em;
+      }
+
+      .tv404 .antenna {
+        width: 5em;
+        height: 5em;
+        border-radius: 50%;
+        border: 2px solid black;
+        background-color: #f27405;
+        margin-bottom: -6em;
+        margin-left: 0em;
+        z-index: -1;
+      }
+      .tv404 .antenna_shadow {
+        position: absolute;
+        background-color: transparent;
+        width: 50px;
+        height: 56px;
+        margin-left: 1.68em;
+        border-radius: 45%;
+        transform: rotate(140deg);
+        border: 4px solid transparent;
+        box-shadow:
+          inset 0px 16px #a85103,
+          inset 0px 16px 1px 1px #a85103;
+        -moz-box-shadow:
+          inset 0px 16px #a85103,
+          inset 0px 16px 1px 1px #a85103;
+      }
+      .tv404 .antenna::after {
+        content: "";
+        position: absolute;
+        margin-top: -9.4em;
+        margin-left: 0.4em;
+        transform: rotate(-25deg);
+        width: 1em;
+        height: 0.5em;
+        border-radius: 50%;
+        background-color: #f69e50;
+      }
+      .tv404 .antenna::before {
+        content: "";
+        position: absolute;
+        margin-top: 0.2em;
+        margin-left: 1.25em;
+        transform: rotate(-20deg);
+        width: 1.5em;
+        height: 0.8em;
+        border-radius: 50%;
+        background-color: #f69e50;
+      }
+      .tv404 .a1 {
+        position: relative;
+        top: -102%;
+        left: -130%;
+        width: 12em;
+        height: 5.5em;
+        border-radius: 50px;
+        background-image: linear-gradient(
+          #171717,
+          #171717,
+          #353535,
+          #353535,
+          #171717
+        );
+        transform: rotate(-29deg);
+        clip-path: polygon(50% 0%, 49% 100%, 52% 100%);
+      }
+      .tv404 .a1d {
+        position: relative;
+        top: -211%;
+        left: -35%;
+        transform: rotate(45deg);
+        width: 0.5em;
+        height: 0.5em;
+        border-radius: 50%;
+        border: 2px solid black;
+        background-color: #979797;
+        z-index: 99;
+      }
+      .tv404 .a2 {
+        position: relative;
+        top: -210%;
+        left: -10%;
+        width: 12em;
+        height: 4em;
+        border-radius: 50px;
+        background-color: #171717;
+        background-image: linear-gradient(
+          #171717,
+          #171717,
+          #353535,
+          #353535,
+          #171717
+        );
+        margin-right: 5em;
+        clip-path: polygon(
+          47% 0,
+          47% 0,
+          34% 34%,
+          54% 25%,
+          32% 100%,
+          29% 96%,
+          49% 32%,
+          30% 38%
+        );
+        transform: rotate(-8deg);
+      }
+      .tv404 .a2d {
+        position: relative;
+        top: -294%;
+        left: 94%;
+        width: 0.5em;
+        height: 0.5em;
+        border-radius: 50%;
+        border: 2px solid black;
+        background-color: #979797;
+        z-index: 99;
+      }
+
+      .tv404 .notfound_text {
+        background-color: black;
+        padding-left: 0.3em;
+        padding-right: 0.3em;
+        font-size: 0.75em;
+        color: white;
+        letter-spacing: 0;
+        border-radius: 5px;
+        z-index: 10;
+      }
+      .tv404 .tv {
+        width: 17em;
+        height: 9em;
+        margin-top: 3em;
+        border-radius: 15px;
+        background-color: #d36604;
+        display: flex;
+        justify-content: center;
+        border: 2px solid #1d0e01;
+        box-shadow: inset 0.2em 0.2em #e69635;
+      }
+      .tv404 .tv::after {
+        content: "";
+        position: absolute;
+        width: 17em;
+        height: 9em;
+        border-radius: 15px;
+        background:
+          repeating-radial-gradient(#d36604 0 0.0001%, #00000070 0 0.0002%) 50% 0/2500px
+            2500px,
+          repeating-conic-gradient(#d36604 0 0.0001%, #00000070 0 0.0002%) 60% 60%/2500px
+            2500px;
+        background-blend-mode: difference;
+        opacity: 0.09;
+      }
+      .tv404 .curve_svg {
+        position: absolute;
+        margin-top: 0.25em;
+        margin-left: -0.25em;
+        height: 12px;
+        width: 12px;
+      }
+      .tv404 .display_div {
+        display: flex;
+        align-items: center;
+        align-self: center;
+        justify-content: center;
+        border-radius: 15px;
+        box-shadow: 3.5px 3.5px 0px #e69635;
+      }
+      .tv404 .screen_out {
+        width: auto;
+        height: auto;
+
+        border-radius: 10px;
+      }
+      .tv404 .screen_out1 {
+        width: 11em;
+        height: 7.75em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+      }
+      .tv404 .screen {
+        width: 13em;
+        height: 7.85em;
+        font-family: Montserrat, system-ui, sans-serif;
+        border: 2px solid #1d0e01;
+        background:
+          repeating-radial-gradient(#000 0 0.0001%, #ffffff 0 0.0002%) 50% 0/2500px
+            2500px,
+          repeating-conic-gradient(#000 0 0.0001%, #ffffff 0 0.0002%) 60% 60%/2500px
+            2500px;
+        background-blend-mode: difference;
+        animation: tv404-static 0.2s infinite alternate;
+        border-radius: 10px;
+        z-index: 99;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #252525;
+        letter-spacing: 0.15em;
+        text-align: center;
+      }
+
+      .tv404 .screenM {
+        width: 13em;
+        height: 7.85em;
+        position: relative;
+        font-family: Montserrat, system-ui, sans-serif;
+        background: linear-gradient(
+          to right,
+          #002fc6 0%,
+          #002bb2 14.2857142857%,
+          #3a3a3a 14.2857142857%,
+          #303030 28.5714285714%,
+          #ff0afe 28.5714285714%,
+          #f500f4 42.8571428571%,
+          #6c6c6c 42.8571428571%,
+          #626262 57.1428571429%,
+          #0affd9 57.1428571429%,
+          #00f5ce 71.4285714286%,
+          #3a3a3a 71.4285714286%,
+          #303030 85.7142857143%,
+          white 85.7142857143%,
+          #fafafa 100%
+        );
+        border-radius: 10px;
+        border: 2px solid black;
+        z-index: 99;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #252525;
+        letter-spacing: 0.15em;
+        text-align: center;
+        overflow: hidden;
+      }
+      .tv404 .screenM:before,
+      .tv404 .screenM:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        z-index: 1;
+        width: 100%;
+      }
+      .tv404 .screenM:before {
+        top: 0;
+        height: 68.4782608696%;
+        background: linear-gradient(
+          to right,
+          white 0%,
+          #fafafa 14.2857142857%,
+          #ffe60a 14.2857142857%,
+          #f5dc00 28.5714285714%,
+          #0affd9 28.5714285714%,
+          #00f5ce 42.8571428571%,
+          #10ea00 42.8571428571%,
+          #0ed600 57.1428571429%,
+          #ff0afe 57.1428571429%,
+          #f500f4 71.4285714286%,
+          #ed0014 71.4285714286%,
+          #d90012 85.7142857143%,
+          #002fc6 85.7142857143%,
+          #002bb2 100%
+        );
+      }
+      .tv404 .screenM:after {
+        bottom: 0;
+        height: 21.7391304348%;
+        background: linear-gradient(
+          to right,
+          #006c6b 0%,
+          #005857 16.6666666667%,
+          white 16.6666666667%,
+          #fafafa 33.3333333333%,
+          #001b75 33.3333333333%,
+          #001761 50%,
+          #6c6c6c 50%,
+          #626262 66.6666666667%,
+          #929292 66.6666666667%,
+          #888888 83.3333333333%,
+          #3a3a3a 83.3333333333%,
+          #303030 100%
+        );
+      }
+
+      @keyframes tv404-static {
+        100% {
+          background-position:
+            50% 0,
+            60% 50%;
+        }
+      }
+
+      .tv404 .lines {
+        display: flex;
+        column-gap: 0.1em;
+        align-self: flex-end;
+      }
+      .tv404 .line1,
+      .tv404 .line3 {
+        width: 2px;
+        height: 0.5em;
+        background-color: black;
+        border-radius: 25px 25px 0px 0px;
+        margin-top: 0.5em;
+      }
+      .tv404 .line2 {
+        flex-grow: 1;
+        width: 2px;
+        height: 1em;
+        background-color: black;
+        border-radius: 25px 25px 0px 0px;
+      }
+
+      .tv404 .buttons_div {
+        width: 4.25em;
+        align-self: center;
+        height: 8em;
+        background-color: #e69635;
+        border: 2px solid #1d0e01;
+        padding: 0.6em;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        row-gap: 0.75em;
+        box-shadow: 3px 3px 0px #e69635;
+      }
+      .tv404 .b1 {
+        width: 1.65em;
+        height: 1.65em;
+        border-radius: 50%;
+        background-color: #7f5934;
+        border: 2px solid black;
+        box-shadow:
+          inset 2px 2px 1px #b49577,
+          -2px 0px #513721,
+          -2px 0px 0px 1px black;
+      }
+      .tv404 .b1::before {
+        content: "";
+        position: absolute;
+        margin-top: 1em;
+        margin-left: 0.5em;
+        transform: rotate(47deg);
+        border-radius: 5px;
+        width: 0.1em;
+        height: 0.4em;
+        background-color: #000000;
+      }
+      .tv404 .b1::after {
+        content: "";
+        position: absolute;
+        margin-top: 0.9em;
+        margin-left: 0.8em;
+        transform: rotate(47deg);
+        border-radius: 5px;
+        width: 0.1em;
+        height: 0.55em;
+        background-color: #000000;
+      }
+      .tv404 .b1 div {
+        content: "";
+        position: absolute;
+        margin-top: -0.1em;
+        margin-left: 0.65em;
+        transform: rotate(45deg);
+        width: 0.15em;
+        height: 1.5em;
+        background-color: #000000;
+      }
+      .tv404 .b2 {
+        width: 1.65em;
+        height: 1.65em;
+        border-radius: 50%;
+        background-color: #7f5934;
+        border: 2px solid black;
+        box-shadow:
+          inset 2px 2px 1px #b49577,
+          -2px 0px #513721,
+          -2px 0px 0px 1px black;
+      }
+      .tv404 .b2::before {
+        content: "";
+        position: absolute;
+        margin-top: 1.05em;
+        margin-left: 0.8em;
+        transform: rotate(-45deg);
+        border-radius: 5px;
+        width: 0.15em;
+        height: 0.4em;
+        background-color: #000000;
+      }
+      .tv404 .b2::after {
+        content: "";
+        position: absolute;
+        margin-top: -0.1em;
+        margin-left: 0.65em;
+        transform: rotate(-45deg);
+        width: 0.15em;
+        height: 1.5em;
+        background-color: #000000;
+      }
+      .tv404 .speakers {
+        display: flex;
+        flex-direction: column;
+        row-gap: 0.5em;
+      }
+      .tv404 .speakers .g1 {
+        display: flex;
+        column-gap: 0.25em;
+      }
+      .tv404 .speakers .g1 .g11,
+      .tv404 .g12,
+      .tv404 .g13 {
+        width: 0.65em;
+        height: 0.65em;
+        border-radius: 50%;
+        background-color: #7f5934;
+        border: 2px solid black;
+        box-shadow: inset 1.25px 1.25px 1px #b49577;
+      }
+      .tv404 .speakers .g {
+        width: auto;
+        height: 2px;
+        background-color: #171717;
+      }
+
+      .tv404 .bottom {
+        width: 100%;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        column-gap: 8.7em;
+      }
+      .tv404 .base1 {
+        height: 1em;
+        width: 2em;
+        border: 2px solid #171717;
+        background-color: #4d4d4d;
+        margin-top: -0.15em;
+        z-index: -1;
+      }
+      .tv404 .base2 {
+        height: 1em;
+        width: 2em;
+        border: 2px solid #171717;
+        background-color: #4d4d4d;
+        margin-top: -0.15em;
+        z-index: -1;
+      }
+      .tv404 .base3 {
+        position: absolute;
+        height: 0.15em;
+        width: 17.5em;
+        background-color: #171717;
+        margin-top: 0.8em;
+      }
+
+      .tv404 .text_404 {
+        position: absolute;
+        display: flex;
+        flex-direction: row;
+        column-gap: 6em;
+        z-index: -5;
+        margin-bottom: 2em;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.5;
+        font-family: Montserrat, system-ui, sans-serif;
+      }
+      .tv404 .text_4041 {
+        transform: scaleY(24.5) scaleX(9);
+      }
+      .tv404 .text_4042 {
+        transform: scaleY(24.5) scaleX(9);
+      }
+      .tv404 .text_4043 {
+        transform: scaleY(24.5) scaleX(9);
+      }
+
+      @media only screen and (max-width: 495px) {
+        .tv404 .text_404 {
+          column-gap: 6em;
+        }
+      }
+      @media only screen and (max-width: 395px) {
+        .tv404 .text_404 {
+          column-gap: 4em;
+        }
+        .tv404 .text_4041 {
+          transform: scaleY(25) scaleX(8);
+        }
+        .tv404 .text_4042 {
+          transform: scaleY(25) scaleX(8);
+        }
+        .tv404 .text_4043 {
+          transform: scaleY(25) scaleX(8);
+        }
+      }
+
+      @media (max-width: 275px), (max-height: 520px) {
+        .tv404 .main {
+          position: relative;
+        }
+      }
+
+      @media only screen and (max-width: 1024px) {
+        .tv404 .screenM {
+          display: flex;
+        }
+        .tv404 .screen {
+          display: none;
+        }
+      }
+      @media only screen and (min-width: 1025px) {
+        .tv404 .screen {
+          display: flex;
+        }
+        .tv404 .screenM {
+          display: none;
+        }
+      }
+
+      /* Fitting it into this page: centred above the heading, never wider than the screen,
+         and its own layer so its back pieces (the antenna, the stand, the giant 404) stay
+         visible in front of the page background. */
+      .tv404 {
+        margin: 0 auto;
+        max-width: 100%;
+        isolation: isolate;
+      }
+
+      /* The page's one column is as wide as the screen, never wider. Without this the
+         column grows to fit the TV's 30em width, and a phone gets a sideways scroll. */
+      main {
+        width: 100%;
+        min-width: 0;
+      }
+
+      /* The giant 404 is scaled up a lot and can poke past the sides on a phone. */
+      body {
+        overflow-x: clip;
+      }
+
+      /* Less motion: the screen's static holds still. */
+      @media (prefers-reduced-motion: reduce) {
+        .tv404 .screen { animation: none; }
       }
     </style>
   </head>
 
   <body>
     <main>
+      <!-- From Uiverse.io by Praashoo7 - https://uiverse.io/Praashoo7/fat-horse-65
+           MIT License, Copyright (c) Praashoo7 (Prashant)
+           A TV showing "NOT FOUND" (styles above, under .tv404). It's decoration, so screen
+           readers skip it; the heading below says the same thing. -->
+      <div class="tv404" aria-hidden="true">
+        <div class="main">
+          <div class="antenna">
+            <div class="antenna_shadow"></div>
+            <div class="a1"></div>
+            <div class="a1d"></div>
+            <div class="a2"></div>
+            <div class="a2d"></div>
+            <div class="a_base"></div>
+          </div>
+          <div class="tv">
+            <div class="cruve">
+              <svg class="curve_svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 189.929 189.929" xml:space="preserve">
+                <path d="M70.343,70.343c-30.554,30.553-44.806,72.7-39.102,115.635l-29.738,3.951C-5.442,137.659,11.917,86.34,49.129,49.13
+            C86.34,11.918,137.664-5.445,189.928,1.502l-3.95,29.738C143.041,25.54,100.895,39.789,70.343,70.343z"></path>
+              </svg>
+            </div>
+            <div class="display_div">
+              <div class="screen_out">
+                <div class="screen_out1">
+                  <div class="screen">
+                    <span class="notfound_text"> NOT FOUND</span>
+                  </div>
+                  <div class="screenM">
+                    <span class="notfound_text"> NOT FOUND</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lines">
+              <div class="line1"></div>
+              <div class="line2"></div>
+              <div class="line3"></div>
+            </div>
+            <div class="buttons_div">
+              <div class="b1"><div></div></div>
+              <div class="b2"></div>
+              <div class="speakers">
+                <div class="g1">
+                  <div class="g11"></div>
+                  <div class="g12"></div>
+                  <div class="g13"></div>
+                </div>
+                <div class="g"></div>
+                <div class="g"></div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom">
+            <div class="base1"></div>
+            <div class="base2"></div>
+            <div class="base3"></div>
+          </div>
+        </div>
+        <div class="text_404">
+          <div class="text_4041">4</div>
+          <div class="text_4042">0</div>
+          <div class="text_4043">4</div>
+        </div>
+      </div>
       <h1>Page not found.</h1>
       <p>That address doesn't lead anywhere. Let's get you back.</p>
       <!-- "/" means the root of the site, so this works no matter how deep the bad address was. -->
