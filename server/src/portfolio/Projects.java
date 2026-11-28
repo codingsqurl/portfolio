@@ -104,7 +104,7 @@ final class Projects {
             links = "<a href=\"" + Html.escape(homepage) + "\">Visit site →</a> " + links;
         }
 
-        return "            <article class=\"card reveal\">\n"
+        return "            <article class=\"card\">\n"
                 + "              <p class=\"card-label\">" + language + " · Updated " + updated + "</p>\n"
                 + "              <h3>" + name + "</h3>\n"
                 + "              <p>" + description + "</p>\n"

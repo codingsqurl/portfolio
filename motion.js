@@ -48,6 +48,49 @@
   var isHome = !!$(".hero");
   var isTerminal = document.body.classList.contains("term-page");
 
+  // Types the hero name in letter by letter (see "Full motion"). Each letter keeps its space
+  // while hidden, so the centred headline never shifts; the caret is moved to just after
+  // the newest letter.
+  function heroType() {
+    var name = $(".hero-name");
+    var caret = name && $(".hero-caret", name);
+    if (!name || !caret) return;
+
+    var text = name.firstChild.nodeValue;
+    name.firstChild.remove();
+    var letters = text.split("").map(function (ch) {
+      var span = document.createElement("span");
+      span.textContent = ch;
+      name.insertBefore(span, caret);
+      return span;
+    });
+    // Screen readers still get the name as one word, not letter by letter.
+    name.setAttribute("aria-label", text);
+    letters.forEach(function (span) { span.setAttribute("aria-hidden", "true"); });
+
+    var edge = function (span) { return span.offsetLeft + span.offsetWidth; };
+    var STEP = 0.055;
+    var start = 0.35;
+    var tl = gsap.timeline({ defaults: { ease: ARRIVE } });
+
+    gsap.set(letters, { opacity: 0 });
+    gsap.set(name, { opacity: 1 });
+    gsap.set(caret, { x: 0, opacity: 1 });
+
+    tl.from(".hero-hi", { y: 14, opacity: 0, filter: "blur(6px)", duration: 0.6, clearProps: "filter" }, 0);
+    letters.forEach(function (span, i) {
+      tl.set(span, { opacity: 1 }, start + i * STEP);
+      tl.set(caret, { x: edge(span) + 2 }, start + i * STEP);
+    });
+
+    var typed = start + letters.length * STEP;
+    tl.to(caret, { opacity: 0, duration: 0.12, ease: "none", repeat: 3, yoyo: true }, typed + 0.15)
+      .to(caret, { opacity: 0, duration: 0.2 }, typed + 0.75)
+      .from(".hero-sub", { y: 16, opacity: 0, duration: 0.7 }, typed - 0.1)
+      .from(".hero-actions > *", { y: 18, opacity: 0, duration: 0.7, stagger: 0.08 }, typed)
+      .from(".hero-status", { y: 10, opacity: 0, duration: 0.6 }, typed + 0.2);
+  }
+
   // ===== Everyone: the tool chips' light wave waits until you see it =====
   // The wave is a CSS loop (style.css, "Skill chips"). It's held back until the chips are
   // a third of the way on screen, then starts from the first chip.
@@ -142,10 +185,10 @@
     var terminalCleanup = null;
 
     if (isHome) {
-      // Hero: the badge and buttons settle into place. The headline stays put.
-      gsap.timeline({ defaults: { ease: ARRIVE } })
-        .from(".hero .eyebrow", { y: 12, scale: 0.94, opacity: 0, duration: 0.7 }, 0.1)
-        .from(".hero-actions > *", { y: 18, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.25);
+      // Hero: the page's one big moment. "Hi, I'm" fades up, then the name types in like a
+      // terminal: a gold caret runs ahead of the letters, blinks twice when it's done and
+      // goes. Then the line under it, the buttons and the "Open to work" light settle in.
+      heroType();
 
       // Cards, strengths, chips and About answers no longer fade in on scroll: they sit
       // ready when you get to them (taste-skill pass). The visuals below still play.

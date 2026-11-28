@@ -125,7 +125,6 @@ a:hover {
 }
 
 
-
 .site-nav {
   position: sticky;
   top: 0;
@@ -190,6 +189,88 @@ a:hover {
   -webkit-backdrop-filter: var(--glass-blur);
   box-shadow: var(--glass-edge);
   margin-bottom: 28px;
+}
+
+/* The greeting steps back so the name can be huge: two sizes, one line each. */
+.hero-hi {
+  display: block;
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-muted);
+  margin-bottom: 0.2em;
+}
+
+.hero-name {
+  /* Holds the caret, which motion.js slides along as the name types in. */
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  font-size: clamp(2.2rem, 14vw, 6rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  /* Room under the line so the gradient keeps the tails of the g and q. */
+  padding-bottom: 0.08em;
+}
+
+/* The terminal caret: only shown while the name is being typed. */
+.hero-caret {
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  width: 0.07em;
+  height: 0.82em;
+  border-radius: 1px;
+  background: var(--rasta-gold);
+  opacity: 0;
+}
+
+/* Before motion.js types the name, it's held back so it doesn't flash in whole first.
+   If the script never runs, it shows anyway after a moment. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  /* .hero in front so this beats the shimmer rule further down. */
+  .hero .hero-name {
+    opacity: 0;
+    animation: shimmer 8s linear infinite, show-anyway 0s 2.5s forwards;
+  }
+}
+
+@keyframes show-anyway {
+  to { opacity: 1; }
+}
+
+/* "Open to work" under the buttons, with a green light that pulses a few times. */
+.hero-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 36px 0 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.status-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rasta-green);
+}
+
+.status-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--rasta-green);
+  animation: status-ping 1.8s cubic-bezier(0.16, 1, 0.3, 1) 1.6s 4;
+  opacity: 0;
+}
+
+@keyframes status-ping {
+  from { transform: scale(1); opacity: 0.7; }
+  to   { transform: scale(3.2); opacity: 0; }
 }
 
 .hero-sub {
@@ -353,10 +434,6 @@ a:hover {
   font-size: 1.3rem;
   font-weight: 600;
   color: white;
-}
-
-.avatar-visitor {
-  background: linear-gradient(180deg, #a5abb8, #858994);
 }
 
 .avatar-claude {
@@ -930,11 +1007,11 @@ a:hover {
    sweep and fade instead of strobing. The reduced-motion block at the end of
    the file switches all of it off for people who've asked for less motion. */
 
-/* ----- Hero: the headline in rasta colours: green, gold and red -----
+/* ----- Hero: the name in rasta colours: green, gold and red -----
    The gradient is twice as wide as the text and slides slowly along it, so the
    colours flow through the name. The loop repeats the first colour at the end
    so there's no jump when it starts again. */
-.hero h1 {
+.hero-name {
   background: linear-gradient(90deg,
     var(--rasta-green), var(--rasta-gold), var(--rasta-red),
     var(--rasta-gold), var(--rasta-green)) 0 0 / 200% 100%;
@@ -1018,22 +1095,6 @@ a:hover {
 }
 
 
-/* ---------- No fade-in on scroll ----------
-   Sections used to fade and rise in as they scrolled into view. The taste-skill pass took
-   that out: content is just there when you reach it. */
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
 /* ---------- Animation helpers (motion.js) ----------
    motion.js adds these elements and classes. Without it, none of this applies. */
 
@@ -1082,14 +1143,6 @@ a:hover {
 
 .gsap-motion .button:hover {
   transform: none;
-}
-
-/* These are animated piece by piece by motion.js instead of fading in as one block. */
-.gsap-motion .card.reveal,
-.gsap-motion .strengths-banner.reveal,
-.gsap-motion .chips.reveal,
-.gsap-motion .qa.reveal {
-  animation: none;
 }
 
 /* A soft light that follows the cursor across the dark panels. */
@@ -1245,16 +1298,13 @@ a:hover {
     scroll-behavior: auto;
   }
 
-  .reveal {
-    animation: none;
-  }
-
   .button {
     transition: none;
   }
 
   /* The lights stay on, but hold still. */
-  .hero h1,
+  .hero-name,
+  .status-dot::after,
   .contrib rect,
   .chips li {
     animation: none;
@@ -1363,8 +1413,6 @@ a:hover {
 .term-lines li { white-space: pre; }
 
 .t-prompt { color: var(--rasta-green); font-weight: 600; }
-.t-dir    { color: #58a6ff; }
-.t-err    { color: #ff7b72; }
 .t-code   { color: #a1a1a6; }
 .t-ok     { color: var(--rasta-green); font-weight: 600; }
 .t-punchline { color: var(--rasta-gold); font-weight: 600; }

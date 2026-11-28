@@ -108,14 +108,17 @@
 
     <!-- The hero is the big, bold first screen of the page. -->
     <header class="hero" id="top">
-      <!-- The badge says what I am and that I'm looking, so an employer knows in one glance. -->
-      <p class="eyebrow">Self-taught developer · Open to work</p>
-      <h1>Hi, I'm coding_squrl.</h1>
+      <!-- The name is the loudest thing on the page. motion.js types it in like a terminal,
+           with a caret, the first time the page loads. Without the script it's just there. -->
+      <h1><span class="hero-hi">Hi, I'm</span> <span class="hero-name">coding_squrl.<span class="hero-caret" aria-hidden="true"></span></span></h1>
       <p class="hero-sub">I build real software for real small businesses, from the terminal to the web.</p>
       <div class="hero-actions">
         <a class="button" href="#work">See my work</a>
         <a class="link-arrow" href="https://github.com/codingsqurl">View my GitHub</a>
       </div>
+      <!-- What I am and that I'm looking, so an employer knows in one glance. The green dot
+           is a live "open" light. -->
+      <p class="hero-status"><span class="status-dot" aria-hidden="true"></span>Self-taught developer · Open to work</p>
     </header>
 
     <main id="main">
@@ -125,11 +128,11 @@
            and points at the proof, so it reads as evidence, not bragging. -->
       <section class="band band-grey" id="strengths">
         <div class="band-inner">
-          <h2 class="reveal">What I bring.</h2>
-          <p class="lead reveal">Here's what my work shows.</p>
+          <h2>What I bring.</h2>
+          <p class="lead">Here's what my work shows.</p>
 
           <!-- One panel, four points, stacked inside it with no boxes of their own. -->
-          <div class="strengths-banner reveal">
+          <div class="strengths-banner">
             <div class="strength">
               <p class="card-label">01 · Real clients</p>
               <h3>I ship for real people.</h3>
@@ -157,8 +160,8 @@
       <!-- ===== WORK: project cards ===== -->
       <section class="band band-dark" id="work">
         <div class="band-inner">
-          <h2 class="reveal">Things I've built.</h2>
-          <p class="lead lead-dark reveal">Real projects, many of them for real clients.</p>
+          <h2>Things I've built.</h2>
+          <p class="lead lead-dark">Real projects, many of them for real clients.</p>
 
           <!-- The grid puts these cards side by side on wide screens and stacks them on phones. -->
           <div class="card-grid">
@@ -166,25 +169,25 @@
                  Don't edit them by hand: the server (Server.java) rewrites them every 10 minutes.
                  To change a card, change the repo's description on GitHub. -->
             <!-- GITHUB-PROJECTS -->
-            <article class="card reveal">
+            <article class="card">
               <p class="card-label">Java · Updated Nov 2026</p>
               <h3>portfolio</h3>
               <p>My portfolio site: hand-written HTML and CSS</p>
               <p class="card-links"><a href="https://github.com/codingsqurl/portfolio">View code →</a></p>
             </article>
-            <article class="card reveal">
+            <article class="card">
               <p class="card-label">Java · Updated Nov 2026</p>
               <h3>EandE</h3>
               <p>Site for E&amp;E Electrical &amp; Property Maintenance, a Colorado Springs electrician and property maintenance crew. Hand-written HTML and CSS with no JavaScript, served by a JDK-only Java server with its own firewall.</p>
               <p class="card-links"><a href="https://codingsqurl.github.io/EandE/">Visit site →</a> <a href="https://github.com/codingsqurl/EandE">View code →</a></p>
             </article>
-            <article class="card reveal">
+            <article class="card">
               <p class="card-label">TypeScript · Updated Jul 2026</p>
               <h3>Woodchuckers719</h3>
               <p>Marketing site and gated staff portal for a Colorado Springs tree service. A Next.js port of the original Go server, running on the same SQLite database.</p>
               <p class="card-links"><a href="https://github.com/codingsqurl/Woodchuckers719">View code →</a></p>
             </article>
-            <article class="card reveal">
+            <article class="card">
               <p class="card-label">CSS · Updated Jul 2026</p>
               <h3>woodlinktree</h3>
               <p>Link-in-bio page for a tree service, in English and Spanish. Hand-written HTML and CSS, with no framework or build step.</p>
@@ -198,13 +201,13 @@
       <!-- ===== ACTIVITY: my GitHub contribution graph + skills ===== -->
       <section class="band band-grey" id="activity">
         <div class="band-inner">
-          <h2 class="reveal">What I've been up to.</h2>
-          <p class="lead reveal">Every day I pushed code this year.</p>
+          <h2>What I've been up to.</h2>
+          <p class="lead">Every day I pushed code this year.</p>
 
           <!-- My GitHub activity for the past year. The server draws it fresh from GitHub;
                what's saved between these comments is the backup. Don't edit it by hand.
                All three graphs sit in one solid panel, like a block of my GitHub profile. -->
-          <div class="github-panel reveal">
+          <div class="github-panel">
           <!-- GITHUB-CONTRIBUTIONS -->
             <figure class="contrib">
               <figcaption>291 contributions in 2026</figcaption>
@@ -225,11 +228,11 @@
           <!-- /GITHUB-CONTRIBUTIONS -->
           </div>
 
-          <h3 class="skills-title reveal">Tools I work with</h3>
+          <h3 class="skills-title">Tools I work with</h3>
           <!-- A plain list, styled as rounded "chips". Taken from my GitHub repos' languages and
                dependencies (Nov 2026): languages first, most-used first, then frameworks, then
                databases and hosting. -->
-          <ul class="chips reveal">
+          <ul class="chips">
             <li>Rust</li>
             <li>TypeScript</li>
             <li>Java</li>
@@ -259,10 +262,10 @@
            Delete the word hidden (and put the nav link back) to bring it back. -->
       <section class="band band-grey" id="review" hidden>
         <div class="band-inner">
-          <h2 class="reveal">An honest review.</h2>
-          <p class="lead reveal">I asked my AI pair-programmer what it really thinks of me.</p>
+          <h2>An honest review.</h2>
+          <p class="lead">I asked my AI pair-programmer what it really thinks of me.</p>
 
-          <div class="chat reveal">
+          <div class="chat">
             <div class="chat-header">
               <span class="avatar avatar-claude" aria-hidden="true">✳</span>
               <span class="chat-name">Claude</span>
@@ -297,7 +300,7 @@
       </section>
 
       <!-- ===== CONTACT ===== -->
-      <section class="band band-white reveal" id="contact">
+      <section class="band band-white" id="contact">
         <div class="band-inner">
           <h2>Let's build something.</h2>
           <p class="lead">Got a project, or want a teammate? My code and my contact info live on GitHub.</p>
@@ -309,9 +312,9 @@
            On wide screens they sit side by side; on phones the answer drops below. -->
       <section class="band band-grey" id="about">
         <div class="band-inner">
-          <h2 class="reveal">About me.</h2>
+          <h2>About me.</h2>
 
-          <dl class="qa reveal">
+          <dl class="qa">
             <div class="qa-item">
               <dt>Who are you?</dt>
               <dd>I'm coding squrl, a self-taught developer who builds software people actually use.</dd>
